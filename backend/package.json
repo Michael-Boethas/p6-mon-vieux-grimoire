@@ -1,0 +1,35 @@
+{
+  "name": "backend-mon-vieux-grimoire",
+  "version": "1.0.0",
+  "description": "Backend pour le site de Mon Vieux Grimoire",
+  "main": "server.js",
+  "scripts": {
+    "test": "\t"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Michael-Boethas/p6-mon-vieux-grimoire.git"
+  },
+  "keywords": [
+    "livre",
+    "librairie",
+    "référencement",
+    "notation",
+    "avis",
+    "lecture",
+    "littérature",
+    "backend",
+    "API",
+    "REST",
+    "Express",
+    "MongoDB",
+    "Mongoose",
+    "MVC"
+  ],
+  "author": "Mishmesh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Michael-Boethas/p6-mon-vieux-grimoire/issues"
+  },
+  "homepage": "https://github.com/Michael-Boethas/p6-mon-vieux-grimoire#readme"
+}
