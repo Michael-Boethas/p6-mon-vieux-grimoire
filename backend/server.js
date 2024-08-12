@@ -1,0 +1,53 @@
+import http from "http";
+import app from "./app.js";
+
+// Fonction pour normaliser le port
+const normalizePort = (val) => {
+  const port = parseInt(val, 10); // Conversion de la valeur en entier
+  if (isNaN(port)) return val; // Retourne la valeur originale si ce n'est pas un nombre
+  if (port >= 0 && port <= 65535) return port; // Retourne le port s'il est valide
+  return false; // Retourne false si le port n'est pas valide
+};
+
+// Définir le port
+const port = normalizePort(process.env.PORT || "4000");
+app.set("port", port); // Attribution du port pour l'application
+
+// Fonction de gestion des erreurs
+const errorHandler = (error) => {
+  // Vérifie si l'erreur concerne l'écoute du serveur
+  if (error.syscall !== "listen") {
+    throw error; // Lève une erreur si elle n'est pas liée à l'écoute du serveur
+  }
+
+  const address = server.address(); // Récupération de l'adresse du serveur
+  const bind =
+    typeof address === "string" ? "pipe " + address : "port: " + port; // Détermination du type d'adresse
+
+  // Gestion des différentes erreurs possibles
+  switch (error.code) {
+    case "EACCES": // Permission refusée
+      console.error(`${bind} nécessite des privilèges élevés.`);
+      process.exit(1);
+
+    case "EADDRINUSE": // Port indisponible
+      console.error(
+        `Le port ${port} est déjà utilisé. Le serveur ne peut pas démarrer.`,
+      );
+      process.exit(1);
+
+    default:
+      console.error("Une erreur inattendue est survenue :", error);
+      throw error;
+  }
+};
+
+// Création et démarrage du serveur HTTP
+const server = http.createServer(app);
+server.on("error", errorHandler); // Gestion des événements d'erreur du serveur
+server.on("listening", () => {
+  const address = server.address(); // Récupération de l'adresse du serveur
+  const bind = typeof address === "string" ? "pipe " + address : `port ${port}`; // Détermination du type d'adresse
+  console.log(`Écoute sur ${bind}`);
+});
+server.listen(port); // Démarrage du serveur en écoutant sur le port spécifié
