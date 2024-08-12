@@ -18,13 +18,13 @@ mongoose
 const getBooks = (req, res, next) => {
   Book.find() // Méthode Mongoose qui retourne tous les Books
     .then((books) => res.status(200).json(books))
-    .catch((error) => res.status(400).json({ error }));
+    .catch((err) => res.status(400).json({ err }));
 };
 
 const getBookByID = (req, res, next) => {
   Book.findOne({ _id: req.params.id }) // Récupère un objet par son _id MongoDB
     .then((book) => res.status(200).json(book))
-    .catch((error) => res.status(404).json({ error }));
+    .catch((err) => res.status(404).json({ err }));
 };
 
 const postBook = (req, res, next) => {
@@ -35,7 +35,7 @@ const postBook = (req, res, next) => {
   book
     .save() // Méthode Mongoose pour enregistrer le nouvel objet dans MongoDB
     .then(() => res.status(201).json({ message: "Nouveau livre enregistré !" }))
-    .catch((error) => res.status(400).json({ error }));
+    .catch((err) => res.status(400).json({ err }));
 };
 
 app.get(API_ROUTES.BOOKS, getBooks);

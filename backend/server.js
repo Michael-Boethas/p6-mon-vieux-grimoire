@@ -14,10 +14,10 @@ const port = normalizePort(process.env.PORT || "4000");
 app.set("port", port); // Attribution du port pour l'application
 
 // Fonction de gestion des erreurs
-const errorHandler = (error) => {
+const errorHandler = (err) => {
   // Vérifie si l'erreur concerne l'écoute du serveur
-  if (error.syscall !== "listen") {
-    throw error; // Lève une erreur si elle n'est pas liée à l'écoute du serveur
+  if (err.syscall !== "listen") {
+    throw err; // Lève une erreur si elle n'est pas liée à l'écoute du serveur
   }
 
   const address = server.address(); // Récupération de l'adresse du serveur
@@ -25,7 +25,7 @@ const errorHandler = (error) => {
     typeof address === "string" ? "pipe " + address : "port: " + port; // Détermination du type d'adresse
 
   // Gestion des différentes erreurs possibles
-  switch (error.code) {
+  switch (err.code) {
     case "EACCES": // Permission refusée
       console.error(`${bind} nécessite des privilèges élevés.`);
       process.exit(1);
@@ -37,8 +37,8 @@ const errorHandler = (error) => {
       process.exit(1);
 
     default:
-      console.error("Une erreur inattendue est survenue :", error);
-      throw error;
+      console.error("Une erreur inattendue est survenue :", err);
+      throw err;
   }
 };
 
