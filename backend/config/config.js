@@ -1,4 +1,4 @@
-export const API_ROUTES = {
+export const API_ENDPOINTS = {
   SIGN_UP: `/api/auth/signup`,
   SIGN_IN: `/api/auth/login`,
   BOOKS: `/api/books`,
