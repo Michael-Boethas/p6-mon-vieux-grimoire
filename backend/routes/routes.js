@@ -1,8 +1,7 @@
 import express from "express";
 import { API_ENDPOINTS } from "../config/config.js";
+import { signUp, signIn } from "../controllers/userControllers.js";
 import {
-  signUp,
-  signIn,
   getBooks,
   getBookByID,
   getTop3,
@@ -10,7 +9,7 @@ import {
   rateBook,
   updateBook,
   deleteBook,
-} from "../controllers/controllers.js";
+} from "../controllers/bookControllers.js";
 
 const router = express.Router();
 

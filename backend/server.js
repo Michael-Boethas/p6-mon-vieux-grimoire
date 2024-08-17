@@ -1,5 +1,19 @@
 import http from "http";
 import app from "./app.js";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+
+
+// Acquisition des variables d'environnement depuis .env
+dotenv.config();
+
+mongoose
+  .connect(process.env.MONGODB_CONNECTION_STRING)  // Connexion à MongoDB
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch((err) => {
+    console.error("Connexion à MongoDB échouée :", err);
+    process.exit(1);
+  });
 
 // Fonction pour normaliser le port
 const normalizePort = (val) => {
@@ -10,7 +24,7 @@ const normalizePort = (val) => {
 };
 
 // Définir le port
-const port = normalizePort(process.env.PORT || "4000");
+const port = normalizePort(process.env.PORT || "4000");  // PORT en variable d'environnement ou 4000 par défaut
 app.set("port", port); // Attribution du port pour l'application
 
 // Fonction de gestion des erreurs
