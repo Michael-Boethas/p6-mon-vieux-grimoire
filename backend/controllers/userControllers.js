@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
 
@@ -36,9 +37,11 @@ export const signUp = (req, res, next) => {
             }
             res
               .status(200) // 200: OK
-              .json({ 
-                userId: user._id, // _id MongoDB
-                token: "TOKEN",   //  
+              .json({
+                // _id MongoDB
+                userId: user._id,
+                // Token chiffré avec signature, userId et date de validité
+                token: jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: "24h"})  
               });
           })
           .catch((err) => res.status(500).json({ err }));
