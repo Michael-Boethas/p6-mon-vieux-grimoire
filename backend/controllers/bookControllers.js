@@ -3,8 +3,8 @@ import Book from "../models/book.js";
 
 export const getBooks = (req, res, next) => {
   Book.find() // Méthode Mongoose qui retourne tous les Books
-    .then((books) => res.status(200).json(books))
-    .catch((err) => res.status(400).json({ err }));
+    .then((books) => res.status(200).json(books))   // 200: OK
+    .catch((err) => res.status(400).json({ err }));   // 400: Bad Request
 };
 
 export const getBookByID = (req, res, next) => {

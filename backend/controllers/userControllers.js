@@ -19,32 +19,32 @@ export const signUp = (req, res, next) => {
       .catch((err) => res.status(500).json({ err }));   // 500: Internal server error
   };
   
-  export const signIn = (req, res, next) => {
-    User.findOne({ email: req.body.email })    // Identification de l'utilisateur
-      .then((user) => {
-        if (!user) {  // Erreur si l'identifiant utilisateur n'éxiste pas 
-          return res
-            .status(401)  // 401: Unauthorized
-            .json({ message: "Paire login/mot de passe incorrecte" });
-        }
-        bcrypt
-          .compare(req.body.password, user.password)  // Vérification du mot de passe en le comparant à la version hachée sur la DB 
-          .then((valid) => {
-            if (!valid) {  // Erreur si le mot de passe est incorrect
-              return res
-                .status(401)  // 401: Unauthorized
-                .json({ message: "Paire login/mot de passe incorrecte" });
-            }
-            res
-              .status(200) // 200: OK
-              .json({
-                // _id MongoDB
-                userId: user._id,
-                // Token chiffré avec signature, userId et date de validité
-                token: jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: "24h"})  
-              });
-          })
-          .catch((err) => res.status(500).json({ err }));
-      })
-      .catch((err) => res.status(500).json({ err }));
-  };
+export const signIn = (req, res, next) => {
+  User.findOne({ email: req.body.email })    // Identification de l'utilisateur
+    .then((user) => {
+      if (!user) {  // Erreur si l'identifiant utilisateur n'éxiste pas 
+        return res
+          .status(401)  // 401: Unauthorized
+          .json({ message: "Paire login/mot de passe incorrecte" });
+      }
+      bcrypt
+        .compare(req.body.password, user.password)  // Vérification du mot de passe en le comparant à la version hachée sur la DB 
+        .then((valid) => {
+          if (!valid) {  // Erreur si le mot de passe est incorrect
+            return res
+              .status(401)  // 401: Unauthorized
+              .json({ message: "Paire login/mot de passe incorrecte" });
+          }
+          res
+            .status(200) // 200: OK
+            .json({
+              // _id MongoDB
+              userId: user._id,
+              // Token chiffré avec signature, userId et date de validité
+              token: jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: "24h"})  
+            });
+        })
+        .catch((err) => res.status(500).json({ err }));
+    })
+    .catch((err) => res.status(500).json({ err }));
+};

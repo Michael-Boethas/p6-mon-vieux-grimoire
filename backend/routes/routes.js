@@ -1,5 +1,6 @@
 import express from "express";
-import { API_ENDPOINTS } from "../config/config.js";
+import { API_ENDPOINTS } from "../config/endpoints.js";
+import authenticate from "../middleware/auth.js";
 import { signUp, signIn } from "../controllers/userControllers.js";
 import {
   getBooks,
@@ -21,9 +22,9 @@ router.post(API_ENDPOINTS.SIGN_IN, signIn);
 router.get(API_ENDPOINTS.BOOKS, getBooks);
 router.get(API_ENDPOINTS.BOOK_BY_ID, getBookByID);
 router.get(API_ENDPOINTS.BEST_RATED, getTop3);
-router.post(API_ENDPOINTS.BOOKS, postBook);
-router.post(API_ENDPOINTS.RATING, rateBook);
-router.put(API_ENDPOINTS.BOOK_BY_ID, updateBook);
-router.delete(API_ENDPOINTS.BOOK_BY_ID, deleteBook);
+router.post(API_ENDPOINTS.BOOKS, authenticate, postBook);
+router.post(API_ENDPOINTS.RATING, authenticate, rateBook);
+router.put(API_ENDPOINTS.BOOK_BY_ID, authenticate, updateBook);
+router.delete(API_ENDPOINTS.BOOK_BY_ID, authenticate, deleteBook);
 
 export default router;
