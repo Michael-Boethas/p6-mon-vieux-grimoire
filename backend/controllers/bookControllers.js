@@ -16,14 +16,19 @@ export const getBookByID = (req, res, next) => {
 export const getTop3 = (req, res, next) => {};
 
 export const postBook = (req, res, next) => {
-  delete req.body._id; // Retire un éventuel champs "_id" qui entrerait en conflit avec celui fournit par MongoDB
+  const bookData = JSON.parse(req.body.book);  // Extraction des données du livre envoyé 
+  delete bookData._id;         // Suppression d'un éventuel champs _id qui entrerait en conflit avec celui fournit par MongoDB
+  delete bookData._userId;    // Suppression d'un éventuel champs _userId erroné
   const book = new Book({
-    ...req.body, // L'opérateur spread permet ici de recréer la liste des champs du body
+      ...bookData,             // Création des champs du modèle Book à partir des données extraites 
+      userId: req.auth.userId,  // Ajout de l'identifiant utilisateur extrait du token
+      averageRating: 0,        // Initialisation de la note moyenne à zéro
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`  // Ajout de l'URL de l'image téléchargée
   });
-  book
-    .save() // Méthode Mongoose pour enregistrer le nouvel objet dans MongoDB
-    .then(() => res.status(201).json({ message: "Nouveau livre enregistré !" }))
-    .catch((err) => res.status(400).json({ err }));
+
+  book.save()
+  .then(() => { res.status(201).json({message: 'Objet enregistré !'})})   // 201: Created
+  .catch(err => { res.status(400).json( { err})})
 };
 
 export const rateBook = (req, res, next) => {};

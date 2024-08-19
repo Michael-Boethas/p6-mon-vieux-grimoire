@@ -13,7 +13,7 @@ const bookSchema = new mongoose.Schema({
       grade: { type: Number, required: true },
     },
   ],
-  averageRating: { type: Number, required: false },
+  averageRating: { type: Number, required: true},
 });
 
 export default mongoose.model("Book", bookSchema);
