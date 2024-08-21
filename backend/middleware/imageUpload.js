@@ -1,23 +1,19 @@
 import multer from "multer";
 
-// Types de fichiers autorisés
-const MIME_TYPES = {
-    "image/jpg": "jpg",
-    "image/jpeg": "jpg",
-    "image/png": "png"
-};
-
-const localStorage = multer.diskStorage({   // Stockage en local sur le serveur
+    // Stockage en local sur le serveur
+const localStorage = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, "public/images");   // Destination du fichier téléchargé
+        callback(null, "public/images");   // Adresse de stockage
     },
     filename: (req, file, callback) => {
-        const name = file.originalname.split(" ").join("_");  // Substitution des espaces pour des underscores
-        const extension = MIME_TYPES[file.mimetype];       // Acquisition de l'extension depuis le dictionnaire MIME_TYPES
-        callback(null, name + Date.now() + "." + extension);  // Nom + date + extension du fichier téléchargé
+        const book = JSON.parse(req.body.book);
+        const name = book.title.split(" ").join("_");  // Substitution des espaces par des underscores
+        const timestamp = Date.now();                  // Récupération du timestamp actuel
+        callback(null, `${name}_${timestamp}`); // Nom du fichier avec un underscore comme séparateur
     }
 });
 
 const imageUpload = multer({ storage: localStorage }).single("image");  // Une seule image autorisée
 
 export default imageUpload;
+

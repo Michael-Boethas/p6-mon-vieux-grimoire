@@ -4,6 +4,7 @@ import User from "../models/user.js";
 
 //////////// Création d'un nouvel utilisateur ////////////////////////
 export const signUp = (req, res, next) => {
+  console.log("#### New user signing up ####");
     bcrypt
       .hash(req.body.password, 10) // Hachage du mot de passe utilisateur
       .then((hash) => {
@@ -21,6 +22,7 @@ export const signUp = (req, res, next) => {
   
 /////////////// Vérification de l'utilisateur, envoi de l'id et du token  //////////////////
 export const signIn = (req, res, next) => {
+  console.log("#### User signing in ####");
   User.findOne({ email: req.body.email })    // Identification de l'utilisateur
     .then((user) => {
       if (!user) {  // Erreur si l'identifiant utilisateur n'éxiste pas 

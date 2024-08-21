@@ -48,7 +48,7 @@ dotenv.config();
 // Connexion à MongoDB
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING)
-  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .then(() => console.log("Connexion à MongoDB établie !"))
   .catch((err) => {
     console.error("Connexion à MongoDB échouée :", err);
     process.exit(1);
