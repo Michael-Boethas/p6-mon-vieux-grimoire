@@ -6,7 +6,7 @@ import { signUp, signIn } from "../controllers/userControllers.js";
 import {
   getBooks,
   getBookByID,
-  getTop3,
+  getBestRated,
   postBook,
   rateBook,
   updateBook,
@@ -21,11 +21,12 @@ router.post(API_ENDPOINTS.SIGN_IN, signIn);
 
 //////////// Book Routes ///////////////////////////////////
 router.get(API_ENDPOINTS.BOOKS, getBooks);
-router.get(API_ENDPOINTS.BOOK_BY_ID, getBookByID);
-router.get(API_ENDPOINTS.BEST_RATED, getTop3);
 router.post(API_ENDPOINTS.BOOKS, authenticate, imageUpload, postBook);
-router.post(API_ENDPOINTS.RATING, authenticate, rateBook);
+router.get(API_ENDPOINTS.BEST_RATED, getBestRated);  // Avant la route paramétrée :id pour éviter les problèmes de routage
+router.get(API_ENDPOINTS.BOOK_BY_ID, getBookByID);  
 router.put(API_ENDPOINTS.BOOK_BY_ID, authenticate, updateBook);
 router.delete(API_ENDPOINTS.BOOK_BY_ID, authenticate, deleteBook);
+router.post(API_ENDPOINTS.RATING, authenticate, rateBook);
+
 
 export default router;

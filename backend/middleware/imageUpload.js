@@ -9,7 +9,7 @@ const MIME_TYPES = {
 
 const localStorage = multer.diskStorage({   // Stockage en local sur le serveur
     destination: (req, file, callback) => {
-        callback(null, "images");   // Destination du fichier téléchargé
+        callback(null, "public/images");   // Destination du fichier téléchargé
     },
     filename: (req, file, callback) => {
         const name = file.originalname.split(" ").join("_");  // Substitution des espaces pour des underscores

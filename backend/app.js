@@ -9,6 +9,8 @@ app.use(express.json()); // Middleware pour le traitement des requêtes avec des
 
 app.use(setHeaders);  // Mise en place des headers
 
+app.use(express.static("public"));  // Accès aux fichiers statiques
+
 app.use(routes);  // Mise en place des routes de l'API
 
 export default app;

@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
-
+//////////// Création d'un nouvel utilisateur ////////////////////////
 export const signUp = (req, res, next) => {
     bcrypt
       .hash(req.body.password, 10) // Hachage du mot de passe utilisateur
@@ -19,6 +19,7 @@ export const signUp = (req, res, next) => {
       .catch((err) => res.status(500).json({ err }));   // 500: Internal server error
   };
   
+/////////////// Vérification de l'utilisateur, envoi de l'id et du token  //////////////////
 export const signIn = (req, res, next) => {
   User.findOne({ email: req.body.email })    // Identification de l'utilisateur
     .then((user) => {
