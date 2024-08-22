@@ -20,14 +20,14 @@ const router = express.Router();
 router.post(API_ENDPOINTS.SIGN_UP, signUp);
 router.post(API_ENDPOINTS.SIGN_IN, signIn);
 
-//////////// Book Routes ///////////////////////////////////
+//////////// Book Routes /////////////////////////////////////////////
 router.get(API_ENDPOINTS.BOOKS, getBooks);
 router.post(API_ENDPOINTS.BOOKS, authenticate, imageUpload, imageOptimize, postBook);
-router.get(API_ENDPOINTS.BEST_RATED, getBestRated);  // Avant la route paramétrée :id pour éviter les problèmes de routage
+router.get(API_ENDPOINTS.BEST_RATED, getBestRated);
 router.get(API_ENDPOINTS.BOOK_BY_ID, getBookByID);  
-router.put(API_ENDPOINTS.BOOK_BY_ID, authenticate, updateBook);
+router.put(API_ENDPOINTS.BOOK_BY_ID, authenticate, imageUpload, imageOptimize, updateBook);
 router.delete(API_ENDPOINTS.BOOK_BY_ID, authenticate, deleteBook);
-router.post(API_ENDPOINTS.RATING, authenticate, rateBook);
+router.post(API_ENDPOINTS.RATING, authenticate, rateBook);  // Routes ordonnées par spécificté afin d'éviter les conflits de routage
 
 
 export default router;
