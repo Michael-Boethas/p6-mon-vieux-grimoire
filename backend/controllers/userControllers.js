@@ -5,7 +5,7 @@ import User from "../models/user.js";
 
 //////////// Création d'un nouvel utilisateur ////////////////////////
 export const signUp = async (req, res, next) => {
-  console.log("#### New user signing up ####");
+  console.log("### New user signing up ###");
 
   const { email, password } = req.body;
 
@@ -34,7 +34,7 @@ export const signUp = async (req, res, next) => {
 
 /////////////// Vérification de l'utilisateur, envoi de l'id et du token  //////////////////
 export const signIn = async (req, res, next) => {
-  console.log("#### User signing in ####");
+  console.log("### User signing in ###");
 
   const { email, password } = req.body;
   if (!email || !password) {
@@ -47,7 +47,7 @@ export const signIn = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: email }); // Identification de l'utilisateur
     if (!user) {
-      console.error("User does not found in database");
+      console.error("User not found in database");
       return res
         .status(httpStatus.UNAUTHORIZED)
         .json({ error: "User does not exist" });

@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import jwt from "jsonwebtoken";
 
 const authenticate = (req, res, next) => {
-  console.log("#### Authentication ####");
+  console.log("### Authentication ###");
   try {
     const token = req.headers.authorization.split(" ")[1]; // Extraction du token depuis le header Authorization
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY); // Verification de sa validité avec la clé

@@ -1,5 +1,8 @@
 import multer from "multer";
+import fs from "fs";
 import httpStatus from "http-status";
+
+const imagesDir = "public/images/";
 
 // Stockage en local sur le serveur
 const localStorage = multer.diskStorage({
@@ -17,6 +20,12 @@ const localStorage = multer.diskStorage({
 const multerConfig = multer({ storage: localStorage }).single("image"); // Une seule image autorisée
 
 const imageUpload = (req, res, next) => {
+  console.log("### Uploading image to server ###");
+  // Création du dossier s'il n'existe pas
+  if (!fs.existsSync(imagesDir)) {
+    fs.mkdirSync(imagesDir, { recursive: true }); 
+  }
+  // Enregistrement de l'image
   multerConfig(req, res, (err) => {
     if (err) {
       console.error("Error during file upload:", err);
