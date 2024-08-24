@@ -110,10 +110,8 @@ const deleteImage = promisify(fs.unlink);
 
 export const deleteBook = async (req, res, next) => {
 
-  console.log(`%%%%%%%%% BODY:     ${JSON.parse(req.body.userId)}`)
-  console.log(`>>>>>>>>> AUTH:     ${req.auth.userId}`)
-  
   const bookId = req.params.id;
+  console.log(">>>>>>>>>>> " + req.auth.userId)
   if (!bookId) {
     console.error("ID missing or undefined");
     return res
@@ -122,25 +120,30 @@ export const deleteBook = async (req, res, next) => {
   }
   console.log(`#### Deleting book ${req.params.id} ####`);
 
-  if (req.body.userId !== req.auth.userId) {
-    console.error("Operation denied: user unauthorized");
-    return res.status(httpStatus.FORBIDDEN).json({ error: "Operation denied" });
-  }
   try {
     const book = await Book.findOne({ _id: bookId });
-    const filePath = book.imageUrl;
+    const fileName = book.imageUrl.split('/images/')[1];
+    const filePath = `public/images/${fileName}`;       // Reconstruction de l'URL de l'image
+
+    if (book.userId !== req.auth.userId) {
+      console.error("Operation denied: user unauthorized");
+      return res.status(httpStatus.FORBIDDEN).json({ error: "Operation denied" });
+    }
     if (!filePath) {
       console.error(`File not found at: ${filePath}`);
       return res.status(httpStatus.NOT_FOUND).json({ error: "Image file not found" });
     }
 
-    await Book.deleteOne({ _id: req.params.id }); // Suppression du Book avec l'id en paramètre dans l'URL de la requête
+    // Suppression préalable de l'image (avant d'effacer l'objet contenant imageUrl)
     try {
       await deleteImage(filePath);
       console.log("Image deleted");
     } catch (err) {
       console.error(`Failed to delete : ${filePath}`, err);
     }
+
+    await Book.deleteOne({ _id: bookId }); // Suppression du Book avec l'id en paramètre dans l'URL de la requête
+
     return res.status(httpStatus.OK).json({ message: "Le livre a bien été supprimé !" });
   } catch (err) {
     console.error("An error occured during the deletion", err);
