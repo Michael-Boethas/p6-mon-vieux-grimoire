@@ -1,3 +1,4 @@
+import httpStatus from "http-status";
 import jwt from "jsonwebtoken";
 
 const authenticate = (req, res, next) => {
@@ -12,7 +13,8 @@ const authenticate = (req, res, next) => {
     };
     next();
   } catch (err) {
-    res.status(401).json({ err }); // 401: Unauthorized
+    console.error("Authentication error: ", err);
+    return res.status(httpStatus.UNAUTHORIZED).json({ err });
   }
 };
 

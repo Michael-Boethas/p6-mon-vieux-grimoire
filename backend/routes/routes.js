@@ -7,7 +7,7 @@ import { signUp, signIn } from "../controllers/userControllers.js";
 import {
   getBooks,
   getBookByID,
-  getBestRated,
+  getTopRated,
   postBook,
   rateBook,
   updateBook,
@@ -23,7 +23,7 @@ router.post(API_ENDPOINTS.SIGN_IN, signIn);
 //////////// Book Routes /////////////////////////////////////////////
 router.get(API_ENDPOINTS.BOOKS, getBooks);
 router.post(API_ENDPOINTS.BOOKS, authenticate, imageUpload, imageOptimize, postBook);
-router.get(API_ENDPOINTS.BEST_RATED, getBestRated);
+router.get(API_ENDPOINTS.BEST_RATED, getTopRated);
 router.get(API_ENDPOINTS.BOOK_BY_ID, getBookByID);  
 router.put(API_ENDPOINTS.BOOK_BY_ID, authenticate, imageUpload, imageOptimize, updateBook);
 router.delete(API_ENDPOINTS.BOOK_BY_ID, authenticate, deleteBook);

@@ -3,7 +3,6 @@ import app from "./app.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-
 // Fonction de normalisation du port
 const normalizePort = (val) => {
   const port = parseInt(val, 10); // Conversion de la valeur en entier
@@ -22,7 +21,7 @@ const errorHandler = (err) => {
   const address = server.address(); // Récupération de l'adresse du serveur
   const bind =
     typeof address === "string" ? "pipe " + address : "port: " + port; // Détermination du type d'adresse (pipe si chaîne, port si objet)
-    
+
   // Gestion de certains cas spécifiques d'erreurs d'écoute
   switch (err.code) {
     case "EACCES": // Permission refusée
@@ -31,7 +30,7 @@ const errorHandler = (err) => {
 
     case "EADDRINUSE": // Port indisponible
       console.error(
-        `Le port ${port} est déjà utilisé. Le serveur ne peut pas démarrer.`,
+        `Le port ${port} est déjà utilisé. Le serveur ne peut pas démarrer.`
       );
       process.exit(1);
 
@@ -55,7 +54,7 @@ mongoose
   });
 
 // Attribution du port
-const port = normalizePort(process.env.PORT || "4000");  // PORT en variable d'environnement ou 4000 par défaut
+const port = normalizePort(process.env.PORT || "4000"); // PORT en variable d'environnement ou 4000 par défaut
 app.set("port", port);
 
 // Création et démarrage du serveur HTTP
