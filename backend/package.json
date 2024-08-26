@@ -7,8 +7,10 @@
   "scripts": {
     "test": "\t",
     "pretty": "prettier --write .",
+    "lint": "eslint .",
     "start": "nodemon server.js"
   },
+  "prettier": "prettier-config-standard",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Michael-Boethas/p6-mon-vieux-grimoire.git"
@@ -36,8 +38,12 @@
   },
   "homepage": "https://github.com/Michael-Boethas/p6-mon-vieux-grimoire#readme",
   "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "eslint": "^9.9.1",
+    "globals": "^15.9.0",
     "nodemon": "^3.1.4",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "prettier-config-standard": "^7.0.0"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
