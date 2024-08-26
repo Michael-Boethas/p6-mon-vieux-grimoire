@@ -6,7 +6,7 @@ import routes from './routes/routes.js'
 // Initialisation de l'application express
 const app = express()
 
-app.use(setRequestLimit)  // Gestion du flux de requêtes entrantes 
+app.use(setRequestLimit) // Gestion du flux de requêtes entrantes
 
 app.use(express.json()) // Traitement des requêtes avec des données au format JSON
 

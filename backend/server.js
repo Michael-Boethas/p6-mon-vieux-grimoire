@@ -22,7 +22,7 @@ const errorHandler = (err) => {
 
   // Détermination du type d'adresse (pipe si chaîne, port si objet)
   const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port
-  
+
   // Gestion de certains cas spécifiques d'erreurs d'écoute
   switch (err.code) {
     case 'EACCES': // Permission refusée

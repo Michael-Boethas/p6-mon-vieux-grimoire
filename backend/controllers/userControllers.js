@@ -7,8 +7,7 @@ import User from '../models/user.js'
 export const signUp = async (req, res) => {
   console.log('### New user signing up')
 
-  const { email, password } = req.body
-
+  const { email, password } = req.body  // Acquisition des identifiants
   // Validation des paramètres de la requête
   if (!email || !password) {
     console.error(' <!> Email or password missing \n')
@@ -45,9 +44,8 @@ export const signIn = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ email: email }) // Identification de l'utilisateur
-
-    console.log(`### User signing in: ${user._id}`)
+    // Identification de l'utilisateur
+    const user = await User.findOne({ email: email }) 
 
     if (!user) {
       console.error(' <!> User not found in database \n')
@@ -55,6 +53,9 @@ export const signIn = async (req, res) => {
         .status(httpStatus.UNAUTHORIZED)
         .json({ error: 'User does not exist' })
     }
+
+    console.log(`### User signing in: ${user._id}`)
+
     // Vérification du mot de passe en le comparant à la version hachée sur la DB
     const passwordIsMatching = await bcrypt.compare(password, user.password)
     if (!passwordIsMatching) {

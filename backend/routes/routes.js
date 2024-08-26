@@ -21,6 +21,7 @@ router.post(API_ENDPOINTS.SIGN_UP, signUp)
 router.post(API_ENDPOINTS.SIGN_IN, signIn)
 
 //////////// Book Routes ///////////////////////////////////
+// (Par ordre de spécificité pour éviter les erreurs de routage)
 router.get(API_ENDPOINTS.BOOKS, getBooks)
 router.post(
   API_ENDPOINTS.BOOKS,
@@ -39,6 +40,6 @@ router.put(
   updateBook
 )
 router.delete(API_ENDPOINTS.BOOK_BY_ID, authenticate, deleteBook)
-router.post(API_ENDPOINTS.RATING, authenticate, rateBook) // Routes ordonnées par spécificté afin d'éviter les conflits de routage
+router.post(API_ENDPOINTS.RATING, authenticate, rateBook)
 
 export default router

@@ -73,12 +73,12 @@ export const postBook = async (req, res) => {
 
     // Instantiation d'un nouveau livre
     const book = new Book({
+      ratings: [],  // Initialisation d'un tableau vide (remplacé par le rating utilisateur si renseigné)
       ...newBookData, // Création des champs du modèle Book à partir des données extraites
       userId: req.auth.userId, // Ajout de l'identifiant utilisateur extrait du token
       averageRating: 0, // Initialisation de la note moyenne à zéro
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` // Ajout de l'URL de l'image sur le serveur
     })
-
     // Enregistrement sur la base de donnée
     await book.save()
     console.log('  -> New book uploaded')
@@ -145,7 +145,7 @@ export const updateBook = async (req, res) => {
     } else {
       newBookData = { ...req.body }
     }
-
+    
     delete newBookData.userId // Évite d'accidentellement modifier l'utilisateur qui a posté le livre
 
     // Mise à jour avec les nouvelles informations
@@ -242,6 +242,7 @@ export const rateBook = async (req, res) => {
   console.log(`### Rating book: ${bookId}`)
 
   try {
+    // Vérification de l'existence du livre
     const book = await Book.findOne({ _id: bookId })
     if (!book) {
       console.error(' <!> Book not found')
@@ -249,17 +250,23 @@ export const rateBook = async (req, res) => {
     }
 
     const newRating = req.body.rating
+    // Vérification de la validité de la note de l'utilisateur
+    if (newRating < 0 || newRating > 5) {
+      console.error(' <!> User rating is out of range')
+      return res.status(httpStatus.BAD_REQUEST).json({ error: 'Rating should be between 0 and 5'})
+    }
+
+    // Prévention des doublons de ratings
     const userHasRated = book.ratings.find(
       (rating) => rating.userId === req.auth.userId
     )
-
-    // Prévention des doublons de ratings
     if (userHasRated) {
       console.error(' <!> User rating already exists for this book\n')
       return res
         .status(httpStatus.CONFLICT)
         .json({ error: 'User already has rated this book' })
     } else {
+      // Ajout de la note de l'utilisateur
       book.ratings.push({
         userId: req.auth.userId,
         grade: newRating
