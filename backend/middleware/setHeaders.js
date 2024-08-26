@@ -1,16 +1,18 @@
-const allowedOrigin = `http://${process.env.ALLOWED_ORIGIN_DOMAIN || 'localhost'}:${process.env.ALLOWED_ORIGIN_PORT || 3000}`
+import cors from 'cors'
+import helmet from 'helmet'
 
-const setHeaders = (req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin)
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'
-  )
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PUT, DELETE, PATCH, OPTIONS'
-  )
-  next()
+const corsOptions = {
+  origin: `http://${process.env.ALLOWED_ORIGIN_DOMAIN || 'localhost'}:${process.env.ALLOWED_ORIGIN_PORT || 3000}`,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Accept',
+    'Content-Type',
+    'Authorization'
+  ]
 }
+
+const setHeaders = [cors(corsOptions), helmet()]
 
 export default setHeaders

@@ -32,7 +32,7 @@ const imageUpload = (req, res, next) => {
       console.error(err, '\n')
       return res.status(httpStatus.BAD_REQUEST).json({ err })
     }
-    console.log('   > Image uploaded')
+    console.log('  -> Image uploaded')
     next()
   })
 }

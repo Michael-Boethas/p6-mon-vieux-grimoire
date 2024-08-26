@@ -20,7 +20,7 @@ const router = express.Router()
 router.post(API_ENDPOINTS.SIGN_UP, signUp)
 router.post(API_ENDPOINTS.SIGN_IN, signIn)
 
-//////////// Book Routes /////////////////////////////////////////////
+//////////// Book Routes ///////////////////////////////////
 router.get(API_ENDPOINTS.BOOKS, getBooks)
 router.post(
   API_ENDPOINTS.BOOKS,

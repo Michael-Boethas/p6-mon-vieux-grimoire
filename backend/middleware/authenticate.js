@@ -11,7 +11,7 @@ const authenticate = (req, res, next) => {
     req.auth = {
       userId: userId
     }
-    console.log('   > Access granted')
+    console.log('  -> Access granted')
     next()
   } catch (err) {
     console.error(' <!> Authentication error: \n')

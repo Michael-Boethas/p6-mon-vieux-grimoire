@@ -7,7 +7,7 @@ const deleteImage = promisify(fs.unlink)
 
 const imageOptimize = async (req, res, next) => {
   if (!req.file) {
-    console.log('   > No image to process, skipping image optimization')
+    console.log('  -> No image to process, skipping image optimization')
     return next()
   }
 
@@ -18,17 +18,17 @@ const imageOptimize = async (req, res, next) => {
       .webp({ quality: 90 }) // Conversion en webp et compression
       .toFile(filePath + '.webp') // Path créé par Multer + extension
     req.file.filename += '.webp' // Ajout de l'extension webp au filename Multer
-    console.log('   > Image optimized')
+    console.log('  -> Image optimized')
 
     // Suppression du fichier original
     try {
       await deleteImage(filePath)
-      console.log('   > Original image deleted')
+      console.log('  -> Original image deleted')
     } catch (err) {
       console.error(` <!> Failed to delete file: ${req.file.filename} \n`)
       console.error(err, '\n')
     }
-    return next()
+    next()
   } catch (err) {
     console.error(' <!> Error during image optimization: \n')
     console.error(err, '\n')

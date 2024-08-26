@@ -1,9 +1,9 @@
 import http from 'http'
-import app from './app.js'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
+import app from './app.js'
 
-// Fonction de normalisation du port
+// Normalisation du port
 const normalizePort = (val) => {
   const port = parseInt(val, 10) // Conversion de la valeur en entier
   if (isNaN(port)) return val // Retourne la valeur originale si ce n'est pas un nombre (pour accommoder les pipes)
@@ -19,8 +19,10 @@ const errorHandler = (err) => {
   }
 
   const address = server.address() // Récupération de l'adresse du serveur
-  const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port // Détermination du type d'adresse (pipe si chaîne, port si objet)
 
+  // Détermination du type d'adresse (pipe si chaîne, port si objet)
+  const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port
+  
   // Gestion de certains cas spécifiques d'erreurs d'écoute
   switch (err.code) {
     case 'EACCES': // Permission refusée

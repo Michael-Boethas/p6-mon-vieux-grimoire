@@ -81,7 +81,7 @@ export const postBook = async (req, res) => {
 
     // Enregistrement sur la base de donnée
     await book.save()
-    console.log('   > New book uploaded')
+    console.log('  -> New book uploaded')
     return res
       .status(httpStatus.CREATED)
       .json({ message: 'New book uploaded successfully' })
@@ -92,7 +92,7 @@ export const postBook = async (req, res) => {
     // Suppression de l'image du serveur en cas d'échec
     try {
       await deleteImage(`public/images/${req.file.filename}`)
-      console.log('   > The associated image has been deleted')
+      console.log('  -> The associated image has been deleted')
     } catch (err) {
       console.error(' <!> Failed to delete the image after error: \n')
       console.error(err, '\n')
@@ -153,7 +153,7 @@ export const updateBook = async (req, res) => {
       { _id: req.params.id },
       { ...newBookData, _id: req.params.id }
     )
-    console.log('   > Book updated')
+    console.log('  -> Book updated')
     return res
       .status(httpStatus.OK)
       .json({ message: 'Book updated successfully' })
@@ -164,7 +164,7 @@ export const updateBook = async (req, res) => {
     // Suppression de l'image du serveur en cas d'échec
     try {
       await deleteImage(`public/images/${req.file.filename}`)
-      console.log('\n   > The associated image has been deleted')
+      console.log('  -> The associated image has been deleted')
     } catch (err) {
       console.error(' <!> Failed to delete the image after error: \n')
       console.error(err, '\n')
@@ -209,7 +209,7 @@ export const deleteBook = async (req, res) => {
     // Suppression préalable de l'image (avant d'effacer l'objet contenant imageUrl)
     try {
       await deleteImage(filePath)
-      console.log('   > Image deleted')
+      console.log('  -> Image deleted')
     } catch (err) {
       console.error(` <!> Failed to delete: ${filePath} \n`)
       console.error(err, '\n')
@@ -217,7 +217,7 @@ export const deleteBook = async (req, res) => {
 
     // Suppression du livre
     await Book.deleteOne({ _id: bookId })
-    console.log('   > Book deleted')
+    console.log('  -> Book deleted')
     return res
       .status(httpStatus.OK)
       .json({ message: 'Book deleted successfully' })
@@ -256,7 +256,9 @@ export const rateBook = async (req, res) => {
     // Prévention des doublons de ratings
     if (userHasRated) {
       console.error(' <!> User rating already exists for this book\n')
-      return res.status(httpStatus.CONFLICT).json({ error: 'User already has rated this book'})
+      return res
+        .status(httpStatus.CONFLICT)
+        .json({ error: 'User already has rated this book' })
     } else {
       book.ratings.push({
         userId: req.auth.userId,
@@ -266,16 +268,17 @@ export const rateBook = async (req, res) => {
 
     // Calcul de la note moyenne arrondie au centième
     if (book.ratings.length > 0) {
-      let sumRatings = 0;
+      let sumRatings = 0
       book.ratings.forEach((rating) => {
-        sumRatings += rating.grade;
-      });
-      book.averageRating = Math.ceil((sumRatings / book.ratings.length) * 100) / 100;
+        sumRatings += rating.grade
+      })
+      book.averageRating =
+        Math.ceil((sumRatings / book.ratings.length) * 100) / 100
     }
 
     // Enregistrement dans MongoDB
     await book.save()
-    console.log('   > New rating added')
+    console.log('  -> New rating added')
     return res.status(httpStatus.CREATED).json({ book })
   } catch (err) {
     console.error(' <!> Error while rating the book:\n')

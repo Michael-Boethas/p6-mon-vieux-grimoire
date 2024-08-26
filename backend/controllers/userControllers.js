@@ -25,7 +25,7 @@ export const signUp = async (req, res) => {
       password: hashedPassword
     })
     await user.save() // Enregistrement du nouvel utilisateur sur la base de donnée
-    console.log('   > User created')
+    console.log('  -> User created')
     return res.status(httpStatus.CREATED).json({ message: 'New user created' })
   } catch (err) {
     console.error(' <!> Error creating new user: \n')
@@ -63,7 +63,7 @@ export const signIn = async (req, res) => {
         .status(httpStatus.UNAUTHORIZED)
         .json({ error: 'login/password combination incorrect' })
     } else {
-      console.log(`   > User signed-in`)
+      console.log('  -> User signed-in')
       return res.status(httpStatus.OK).json({
         // _id MongoDB
         userId: user._id,
