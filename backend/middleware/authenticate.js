@@ -15,7 +15,9 @@ const authenticate = (req, res, next) => {
     next()
   } catch (err) {
     console.error(' <!> Authentication error: \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
     return res.status(httpStatus.UNAUTHORIZED).json({ err })
   }
 }

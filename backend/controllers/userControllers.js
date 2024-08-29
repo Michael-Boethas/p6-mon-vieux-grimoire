@@ -28,7 +28,9 @@ export const signUp = async (req, res) => {
     return res.status(httpStatus.CREATED).json({ message: 'New user created' })
   } catch (err) {
     console.error(' <!> Error creating new user: \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -76,7 +78,9 @@ export const signIn = async (req, res) => {
     }
   } catch (err) {
     console.error(' <!> Error signing in: \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }

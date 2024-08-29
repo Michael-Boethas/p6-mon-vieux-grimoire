@@ -21,6 +21,14 @@ const multerConfig = multer({ storage: localStorage }).single('image') // Une se
 
 const imageUpload = (req, res, next) => {
   console.log('### Uploading image to server')
+
+  // Restriction du type de fichier
+  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  if (!allowedMimeTypes.includes(req.get('Content-Type'))) {
+    console.error(' <!> Unsupported MIME type input \n');
+    return res.status(httpStatus.BAD_REQUEST).json({ error: 'Unsupported file type' });
+  }
+
   // Création du dossier s'il n'existe pas
   if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir, { recursive: true })
@@ -29,8 +37,10 @@ const imageUpload = (req, res, next) => {
   multerConfig(req, res, (err) => {
     if (err) {
       console.error(' <!> Error during file upload: \n')
-      console.error(err, '\n')
-      return res.status(httpStatus.BAD_REQUEST).json({ err })
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error(err, '\n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    return res.status(httpStatus.BAD_REQUEST).json({ err })
     }
     console.log('  -> Image uploaded')
     next()

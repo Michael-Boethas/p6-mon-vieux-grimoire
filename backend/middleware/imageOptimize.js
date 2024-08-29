@@ -26,12 +26,16 @@ const imageOptimize = async (req, res, next) => {
       console.log('  -> Original image deleted')
     } catch (err) {
       console.error(` <!> Failed to delete file: ${req.file.filename} \n`)
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
       console.error(err, '\n')
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
     }
     next()
   } catch (err) {
     console.error(' <!> Error during image optimization: \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
