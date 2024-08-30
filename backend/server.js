@@ -36,7 +36,10 @@ const errorHandler = (err) => {
       break
 
     default: // Propagation des erreurs d'écoute non traitées
-      console.error('Unexpected error: ', err)
+      console.error(' <!> Unexpected error: ')
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+      console.error(err, '\n')
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
       throw err
   }
 }
@@ -49,7 +52,10 @@ mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING)
   .then(() => console.log('  * Connected to MongoDB'))
   .catch((err) => {
-    console.error('Connection to MongoDB failed: ', err)
+    console.error(' <!> Connection to MongoDB failed:\n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error(err, '\n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     process.exit(1)
   })
 

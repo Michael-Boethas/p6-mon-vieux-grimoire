@@ -7,7 +7,8 @@ import User from '../models/user.js'
 export const signUp = async (req, res) => {
   console.log('### New user signing up')
 
-  const { email, password } = req.body  // Acquisition des identifiants
+  const { email, password } = req.body // Acquisition des identifiants
+
   // Validation des paramètres de la requête
   if (!email || !password) {
     console.error(' <!> Email or password missing \n')
@@ -16,8 +17,17 @@ export const signUp = async (req, res) => {
       .json({ error: 'Email and password are required' })
   }
 
+  // Vérification de la disponibilité de l'adresse email
+  const userExists = await User.findOne({ email })
+  if (userExists) {
+    console.error(' <!> Email already registered \n')
+    return res
+      .status(httpStatus.CONFLICT)
+      .json({ error: 'Email already in use' })
+  }
+
   try {
-    const hashedPassword = await bcrypt.hash(password, 10) // Hachage du mot de passe utilisateur
+    const hashedPassword = await bcrypt.hash(password, 10) // Hachage du mot de passe utilisateur avec 10 rounds de salage 
     // Création d'une instance de User avec l'identifiant (email) et le mot de passe haché
     const user = new User({
       email: email,
@@ -28,9 +38,9 @@ export const signUp = async (req, res) => {
     return res.status(httpStatus.CREATED).json({ message: 'New user created' })
   } catch (err) {
     console.error(' <!> Error creating new user: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -47,7 +57,7 @@ export const signIn = async (req, res) => {
 
   try {
     // Identification de l'utilisateur
-    const user = await User.findOne({ email: email }) 
+    const user = await User.findOne({ email: email })
 
     if (!user) {
       console.error(' <!> User not found in database \n')
@@ -78,9 +88,9 @@ export const signIn = async (req, res) => {
     }
   } catch (err) {
     console.error(' <!> Error signing in: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }

@@ -13,9 +13,9 @@ export const getBooks = async (req, res) => {
     return res.status(httpStatus.OK).json(books)
   } catch (err) {
     console.error(' <!>  Error fetching books: \n') // Affichage de l'erreur côté serveur
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err }) // Envoi de l'erreur au client
   }
 }
@@ -41,9 +41,9 @@ export const getBookByID = async (req, res) => {
     return res.status(httpStatus.OK).json(book)
   } catch (err) {
     console.error(` <!> Error retrieving book (${bookId}): \n`)
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -58,9 +58,9 @@ export const getTopRated = async (req, res) => {
     return res.status(httpStatus.OK).json(topRatedBooks)
   } catch (err) {
     console.error(' <!> Error fetching top rated books: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -79,7 +79,7 @@ export const postBook = async (req, res) => {
 
     // Instantiation d'un nouveau livre
     const book = new Book({
-      ratings: [],  // Initialisation d'un tableau vide (remplacé par le rating utilisateur si renseigné)
+      ratings: [], // Initialisation d'un tableau vide (remplacé par le rating utilisateur si renseigné)
       ...newBookData, // Création des champs du modèle Book à partir des données extraites
       userId: req.auth.userId, // Ajout de l'identifiant utilisateur extrait du token
       averageRating: 0, // Initialisation de la note moyenne à zéro
@@ -93,18 +93,19 @@ export const postBook = async (req, res) => {
       .json({ message: 'New book uploaded successfully' })
   } catch (err) {
     console.error(' <!> Failed to create new book: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     // Suppression de l'image du serveur en cas d'échec
     try {
       await deleteImage(`public/images/${req.file.filename}`)
       console.log('  -> The associated image has been deleted')
     } catch (err) {
       console.error(' <!> Failed to delete the image after error: \n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')    }
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+      console.error(err, '\n')
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    }
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -153,7 +154,7 @@ export const updateBook = async (req, res) => {
     } else {
       newBookData = { ...req.body }
     }
-    
+
     delete newBookData.userId // Évite d'accidentellement modifier l'utilisateur qui a posté le livre
 
     // Mise à jour avec les nouvelles informations
@@ -167,18 +168,19 @@ export const updateBook = async (req, res) => {
       .json({ message: 'Book updated successfully' })
   } catch (err) {
     console.error(' <!> Failed to update image: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     // Suppression de l'image du serveur en cas d'échec
     try {
       await deleteImage(`public/images/${req.file.filename}`)
       console.log('  -> The associated image has been deleted')
     } catch (err) {
       console.error(' <!> Failed to delete the image after error: \n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')    }
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+      console.error(err, '\n')
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    }
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -222,9 +224,10 @@ export const deleteBook = async (req, res) => {
       console.log('  -> Image deleted')
     } catch (err) {
       console.error(` <!> Failed to delete: ${filePath} \n`)
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')    }
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+      console.error(err, '\n')
+      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    }
 
     // Suppression du livre
     await Book.deleteOne({ _id: bookId })
@@ -234,9 +237,9 @@ export const deleteBook = async (req, res) => {
       .json({ message: 'Book deleted successfully' })
   } catch (err) {
     console.error(' <!> An error occured during the deletion: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -244,8 +247,9 @@ export const deleteBook = async (req, res) => {
 //////// Ajout d'un avis sur un livre en particulier /////////////////////////
 export const rateBook = async (req, res) => {
   // Vérification de l'id en paramètre URL
+  
   const bookId = req.params.id
-  if (!bookId) {
+  if (!bookId || bookId === 'undefined') {  // Contourne un problème du frontend
     console.error(' <!> ID parameter missing or undefined \n')
     return res
       .status(httpStatus.BAD_REQUEST)
@@ -266,7 +270,9 @@ export const rateBook = async (req, res) => {
     // Vérification de la validité de la note de l'utilisateur
     if (newRating < 0 || newRating > 5) {
       console.error(' <!> User rating is out of range')
-      return res.status(httpStatus.BAD_REQUEST).json({ error: 'Rating should be between 0 and 5'})
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ error: 'Rating should be between 0 and 5' })
     }
 
     // Prévention des doublons de ratings
@@ -302,9 +308,9 @@ export const rateBook = async (req, res) => {
     return res.status(httpStatus.CREATED).json({ book })
   } catch (err) {
     console.error(' <!> Error while rating the book:\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = \n')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ')
+    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
