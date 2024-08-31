@@ -2,16 +2,17 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import httpStatus from 'http-status'
 import User from '../models/user.js'
+import log from '../utils/logger.js'
 
 //////////// Création d'un nouvel utilisateur ////////////////////////
 export const signUp = async (req, res) => {
-  console.log('### New user signing up')
+  log.info('New user signing up')
 
   const { email, password } = req.body // Acquisition des identifiants
 
   // Validation des paramètres de la requête
   if (!email || !password) {
-    console.error(' <!> Email or password missing \n')
+    log.warn('Email or password missing')
     return res
       .status(httpStatus.BAD_REQUEST)
       .json({ error: 'Email and password are required' })
@@ -20,27 +21,23 @@ export const signUp = async (req, res) => {
   // Vérification de la disponibilité de l'adresse email
   const userExists = await User.findOne({ email })
   if (userExists) {
-    console.error(' <!> Email already registered \n')
+    log.error(new Error('Email already registered'))
     return res
       .status(httpStatus.CONFLICT)
       .json({ error: 'Email already in use' })
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10) // Hachage du mot de passe utilisateur avec 10 rounds de salage 
+    const hashedPassword = await bcrypt.hash(password, 10) // Hachage du mot de passe utilisateur avec 10 rounds de salage
     // Création d'une instance de User avec l'identifiant (email) et le mot de passe haché
     const user = new User({
       email: email,
       password: hashedPassword
     })
     await user.save() // Enregistrement du nouvel utilisateur sur la base de donnée
-    console.log('  -> User created')
     return res.status(httpStatus.CREATED).json({ message: 'New user created' })
   } catch (err) {
-    console.error(' <!> Error creating new user: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -49,7 +46,7 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
   const { email, password } = req.body
   if (!email || !password) {
-    console.error(' <!> Email or password missing \n')
+    log.warn('Email or password missing')
     return res
       .status(httpStatus.BAD_REQUEST)
       .json({ error: 'Email and password are required' })
@@ -60,23 +57,22 @@ export const signIn = async (req, res) => {
     const user = await User.findOne({ email: email })
 
     if (!user) {
-      console.error(' <!> User not found in database \n')
+      log.error(new Error('User not found in database'))
       return res
         .status(httpStatus.UNAUTHORIZED)
         .json({ error: 'User does not exist' })
     }
 
-    console.log(`### User signing in: ${user._id}`)
+    log.info(`User signing in: ${user._id}`)
 
     // Vérification du mot de passe en le comparant à la version hachée sur la DB
     const passwordIsMatching = await bcrypt.compare(password, user.password)
     if (!passwordIsMatching) {
-      console.error(' <!> Password not matching user ID \n')
+      log.error(new Error('Password not matching user ID'))
       return res
         .status(httpStatus.UNAUTHORIZED)
         .json({ error: 'login/password combination incorrect' })
     } else {
-      console.log('  -> User signed-in')
       return res.status(httpStatus.OK).json({
         // _id MongoDB
         userId: user._id,
@@ -87,10 +83,7 @@ export const signIn = async (req, res) => {
       })
     }
   } catch (err) {
-    console.error(' <!> Error signing in: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }

@@ -1,21 +1,19 @@
-import fs from 'fs'
-import { promisify } from 'util'
+// import fs from 'fs'
+// import { promisify } from 'util'
 import httpStatus from 'http-status'
 import Book from '../models/book.js'
+import log from '../utils/logger.js'
+import { deleteImage } from '../utils/utils.js'
 
-const deleteImage = promisify(fs.unlink) // Promessification de fs.unlink
+// const deleteImage = promisify(fs.unlink) // Promessification de fs.unlink
 
 /////////// Renvoie un tableau de tous les livres /////////////////
 export const getBooks = async (req, res) => {
-  console.log('### Fetching Books')
   try {
     const books = await Book.find() // Mongoose, renvoie un tableau contenant tous les livres de la collection
     return res.status(httpStatus.OK).json(books)
   } catch (err) {
-    console.error(' <!>  Error fetching books: \n') // Affichage de l'erreur côté serveur
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err }) // Envoi de l'erreur au client
   }
 }
@@ -25,49 +23,41 @@ export const getBookByID = async (req, res) => {
   // Vérification de l'id en paramètre URL
   const bookId = req.params.id
   if (!bookId) {
-    console.error(' <!> ID parameter missing or undefined')
+    log.error(new Error('ID parameter missing or undefined'))
     return res
       .status(httpStatus.BAD_REQUEST)
       .json({ error: 'ID parameter missing or undefined' })
   }
 
-  console.log(`### Retrieving book: ${bookId}`)
   try {
     const book = await Book.findOne({ _id: bookId }) // Récupère un Book par son _id MongoDB en le comparant au paramètre URL
     if (!book) {
-      console.error(` <!> Book not found (${bookId}) \n`)
+      log.error(new Error(`Book not found (${bookId})`))
       return res.status(httpStatus.NOT_FOUND).json({ error: 'Book not found' })
     }
     return res.status(httpStatus.OK).json(book)
   } catch (err) {
-    console.error(` <!> Error retrieving book (${bookId}): \n`)
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(new Error(`Error retrieving book (${bookId}):`))
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
 
 ///////// Renvoie un tableau des livres les mieux notés ///////////////////
 export const getTopRated = async (req, res) => {
-  console.log('### Fetching top rated books')
   try {
     const topRatedBooks = await Book.find() // Mongoose
       .sort({ averageRating: -1 }) // Tri par ordre décroissant
       .limit(3) //  Uniquement les trois premiers
     return res.status(httpStatus.OK).json(topRatedBooks)
   } catch (err) {
-    console.error(' <!> Error fetching top rated books: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
 
 //////// Ajoute un livre sur la base de donnée ///////////////////////////
 export const postBook = async (req, res) => {
-  console.log('### Adding new book to the database')
+  log.info('Adding new book to the database')
 
   try {
     // Extraction des données du livre envoyé
@@ -87,24 +77,16 @@ export const postBook = async (req, res) => {
     })
     // Enregistrement sur la base de donnée
     await book.save()
-    console.log('  -> New book uploaded')
     return res
       .status(httpStatus.CREATED)
       .json({ message: 'New book uploaded successfully' })
   } catch (err) {
-    console.error(' <!> Failed to create new book: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     // Suppression de l'image du serveur en cas d'échec
     try {
       await deleteImage(`public/images/${req.file.filename}`)
-      console.log('  -> The associated image has been deleted')
     } catch (err) {
-      console.error(' <!> Failed to delete the image after error: \n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-      console.error(err, '\n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+      log.error(err)
     }
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
@@ -115,7 +97,7 @@ export const updateBook = async (req, res) => {
   // Vérification de l'id en paramètre URL
   const bookId = req.params.id
   if (!bookId) {
-    console.error(' <!> ID parameter missing or undefined \n')
+    log.error(new Error('ID parameter missing or undefined'))
     return res
       .status(httpStatus.BAD_REQUEST)
       .json({ error: 'ID parameter missing or undefined' })
@@ -128,15 +110,15 @@ export const updateBook = async (req, res) => {
     const fileName = book.imageUrl.split('/images/')[1]
     const filePath = `public/images/${fileName}`
 
+    log.info(`Updating book: ${bookId}`)
+
     // Vérification de l'utilisateur
     if (book.userId !== req.auth.userId) {
-      console.error(' <!> Operation denied: user unauthorized \n')
+      log.error(new Error('Operation denied: user unauthorized'))
       return res
         .status(httpStatus.FORBIDDEN)
         .json({ error: 'Operation denied: user unauthorized' })
     }
-
-    console.log(`### Updating book: ${bookId}`)
 
     // Gestion des cas avec et sans modification de l'image
     const imageIsModified = req.file ? true : false
@@ -162,24 +144,16 @@ export const updateBook = async (req, res) => {
       { _id: req.params.id },
       { ...newBookData, _id: req.params.id }
     )
-    console.log('  -> Book updated')
     return res
       .status(httpStatus.OK)
       .json({ message: 'Book updated successfully' })
   } catch (err) {
-    console.error(' <!> Failed to update image: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     // Suppression de l'image du serveur en cas d'échec
     try {
       await deleteImage(`public/images/${req.file.filename}`)
-      console.log('  -> The associated image has been deleted')
     } catch (err) {
-      console.error(' <!> Failed to delete the image after error: \n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-      console.error(err, '\n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+      log.error(err)
     }
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
@@ -189,13 +163,13 @@ export const updateBook = async (req, res) => {
 export const deleteBook = async (req, res) => {
   const bookId = req.params.id
   if (!bookId) {
-    console.error(' <!> ID parameter missing or undefined \n')
+    log.error(new Error('ID parameter missing or undefined'))
     return res
       .status(httpStatus.BAD_REQUEST)
       .json({ error: 'ID parameter missing or undefined' })
   }
 
-  console.log(`### Deleting book ${req.params.id}`)
+  log.info(`Deleting book ${req.params.id}`)
 
   try {
     // Acquisition du livre à traiter
@@ -205,14 +179,15 @@ export const deleteBook = async (req, res) => {
 
     // Vérification de l'utilisateur
     if (book.userId !== req.auth.userId) {
-      console.error(' <!> Operation denied: user unauthorized \n')
+      log.error(new Error('Operation denied: user unauthorized'))
       return res
         .status(httpStatus.FORBIDDEN)
         .json({ error: 'Operation denied' })
     }
 
+    // Vérification de l'existence du fichier
     if (!filePath) {
-      console.error(` <!> File not found at: ${filePath} \n`)
+      log.error(new Error(`File not found at: ${filePath}`))
       return res
         .status(httpStatus.NOT_FOUND)
         .json({ error: 'Image file not found' })
@@ -221,25 +196,17 @@ export const deleteBook = async (req, res) => {
     // Suppression préalable de l'image (avant d'effacer l'objet contenant imageUrl)
     try {
       await deleteImage(filePath)
-      console.log('  -> Image deleted')
     } catch (err) {
-      console.error(` <!> Failed to delete: ${filePath} \n`)
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-      console.error(err, '\n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+      log.error(err)
     }
 
     // Suppression du livre
     await Book.deleteOne({ _id: bookId })
-    console.log('  -> Book deleted')
     return res
       .status(httpStatus.OK)
       .json({ message: 'Book deleted successfully' })
   } catch (err) {
-    console.error(' <!> An error occured during the deletion: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
@@ -247,29 +214,30 @@ export const deleteBook = async (req, res) => {
 //////// Ajout d'un avis sur un livre en particulier /////////////////////////
 export const rateBook = async (req, res) => {
   // Vérification de l'id en paramètre URL
-  
+
   const bookId = req.params.id
-  if (!bookId || bookId === 'undefined') {  // Contourne un problème du frontend
-    console.error(' <!> ID parameter missing or undefined \n')
+  if (!bookId || bookId === 'undefined') {
+    // Contourne un problème du frontend
+    log.error(new Error('ID parameter missing or undefined'))
     return res
       .status(httpStatus.BAD_REQUEST)
       .json({ error: 'ID parameter missing or undefined' })
   }
 
-  console.log(`### Rating book: ${bookId}`)
+  log.info(`Rating book: ${bookId}`)
 
   try {
     // Vérification de l'existence du livre
     const book = await Book.findOne({ _id: bookId })
     if (!book) {
-      console.error(' <!> Book not found')
+      log.error(new Error('Book not found'))
       return res.status(httpStatus.NOT_FOUND).json({ error: 'Book not found' })
     }
 
     const newRating = req.body.rating
     // Vérification de la validité de la note de l'utilisateur
     if (newRating < 0 || newRating > 5) {
-      console.error(' <!> User rating is out of range')
+      log.error(new Error('User rating is out of range'))
       return res
         .status(httpStatus.BAD_REQUEST)
         .json({ error: 'Rating should be between 0 and 5' })
@@ -280,7 +248,7 @@ export const rateBook = async (req, res) => {
       (rating) => rating.userId === req.auth.userId
     )
     if (userHasRated) {
-      console.error(' <!> User rating already exists for this book\n')
+      log.error(new Error('User rating already exists for this book'))
       return res
         .status(httpStatus.CONFLICT)
         .json({ error: 'User already has rated this book' })
@@ -304,13 +272,9 @@ export const rateBook = async (req, res) => {
 
     // Enregistrement dans MongoDB
     await book.save()
-    console.log('  -> New rating added')
     return res.status(httpStatus.CREATED).json({ book })
   } catch (err) {
-    console.error(' <!> Error while rating the book:\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }

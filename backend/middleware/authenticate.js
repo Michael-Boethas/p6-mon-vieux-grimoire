@@ -1,8 +1,9 @@
 import httpStatus from 'http-status'
 import jwt from 'jsonwebtoken'
+import log from '../utils/logger.js'
 
 const authenticate = (req, res, next) => {
-  console.log('### Authentication')
+  log.info('Authentication')
   try {
     const token = req.headers.authorization.split(' ')[1] // Extraction du token depuis le header Authorization
     const verifiedToken = jwt.verify(token, process.env.JWT_SECRET_KEY) // Vérification de sa validité avec la clé
@@ -11,13 +12,9 @@ const authenticate = (req, res, next) => {
     req.auth = {
       userId: userId
     }
-    console.log('  -> Access granted')
     next()
   } catch (err) {
-    console.error(' <!> Authentication error: \n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-    console.error(err, '\n')
-    console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+    log.error(err)
     return res.status(httpStatus.UNAUTHORIZED).json({ err })
   }
 }

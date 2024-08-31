@@ -1,6 +1,7 @@
 import multer from 'multer'
 import fs from 'fs'
 import httpStatus from 'http-status'
+import log from '../utils/logger.js'
 
 const imagesDir = process.env.IMAGES_DIR || 'public/images'
 
@@ -21,10 +22,8 @@ const localStorage = multer.diskStorage({
 const acceptedFiles = (req, file, callback) => {
   const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'] // JPG et PNG autorisés
   if (!allowedMimeTypes.includes(file.mimetype)) {
-    console.error(' <!> Unsupported MIME type input \n')
-    return callback(new Error('Unsupported file type'), false)
+    return callback(new Error(`Unsupported MIME type: ${file.mimetype}`), false)
   }
-
   callback(null, true)
 }
 
@@ -34,24 +33,20 @@ const multerConfig = multer({
   limits: { files: 1, fileSize: 5 * 1024 ** 2 } // Restriction à 1 fichier de 5MB maximum
 }).single('image') // Fichier unique du champs "image" de la requête
 
-
 const imageUpload = (req, res, next) => {
-  console.log('### Uploading image to server')
+  log.info('Uploading image to server')
 
   // Création du dossier s'il n'existe pas
   if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir, { recursive: true })
   }
+
   // Enregistrement de l'image
   multerConfig(req, res, (err) => {
     if (err) {
-      console.error(' <!> Error during file upload: \n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
-      console.error(err, '\n')
-      console.error('= = = = = = = = = = = = = = = = = = = = = = = = \n')
+      log.error(err)
       return res.status(httpStatus.BAD_REQUEST).json({ err })
     }
-    console.log('  -> Image uploaded')
     next()
   })
 }
