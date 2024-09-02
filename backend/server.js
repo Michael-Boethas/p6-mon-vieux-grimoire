@@ -26,7 +26,7 @@ const server = http.createServer(app)
 server.on('error', (err) => handleServerError(server, port, err)) // Gestion des événements d'erreur du serveur
 server.on('listening', () => {
   const address = server.address() // Récupération de l'adresse du serveur
-  const bind = typeof address === 'string' ? 'pipe ' + address : `port ${port}` // Détermination du type d'adresse (pipe si chaîne, port si objet)
+  const bind = typeof address === 'string' ? 'pipe ' + address : `port ${port}` // Détermination du type d'adresse
   console.log(`  * Listening on ${bind}`)
 })
 server.listen(port) // Démarrage du serveur en écoutant sur le port spécifié
