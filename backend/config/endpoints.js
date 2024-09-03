@@ -3,6 +3,6 @@ export const API_ENDPOINTS = {
   SIGN_IN: '/api/auth/login',
   BOOKS: '/api/books',
   BEST_RATED: '/api/books/bestrating',
-  BOOK_BY_ID: '/api/books/:id',
-  RATING: '/api/books/:id/rating'
+  RATING: '/api/books/:id/rating',
+  BOOK_BY_ID: '/api/books/:id'
 }

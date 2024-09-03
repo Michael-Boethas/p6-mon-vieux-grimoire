@@ -12,8 +12,6 @@
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Utilisation</a></li>
     <li><a href="#api-endpoints">Endpoints de l'API</a></li>
-    <li><a href="#environment-variables">Variables d'environnement</a></li>
-    <li><a href="#project-structure">Structure du projet</a></li>
     <li><a href="#license">Licence</a></li>
 </ul>
 

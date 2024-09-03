@@ -31,6 +31,7 @@ router.post(
   postBook
 )
 router.get(API_ENDPOINTS.BEST_RATED, getTopRated)
+router.post(API_ENDPOINTS.RATING, authenticate, rateBook)
 router.get(API_ENDPOINTS.BOOK_BY_ID, getBookByID)
 router.put(
   API_ENDPOINTS.BOOK_BY_ID,
@@ -40,6 +41,5 @@ router.put(
   updateBook
 )
 router.delete(API_ENDPOINTS.BOOK_BY_ID, authenticate, deleteBook)
-router.post(API_ENDPOINTS.RATING, authenticate, rateBook)
 
 export default router

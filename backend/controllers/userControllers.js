@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import httpStatus from 'http-status'
 import User from '../models/user.js'
 import log from '../utils/logger.js'
-import { isSafePassword } from '../utils/utils.js'
+// import { isSafePassword } from '../utils/utils.js'
 
 //////////// Création d'un nouvel utilisateur ////////////////////////
 export const signUp = async (req, res) => {
@@ -19,13 +19,13 @@ export const signUp = async (req, res) => {
       .json({ error: 'Email and password are required' })
   }
 
-  if (!isSafePassword(password)) {
-    log.error('Unsafe password')
-    return res.status(httpStatus.BAD_REQUEST).json({
-      error:
-        'Password must be at least 8 characters long and contain uppercase letters, lowercase letters, numbers and symbols'
-    })
-  }
+  // if (!isSafePassword(password)) {
+  //   log.error('Unsafe password, aborting')
+  //   return res.status(httpStatus.BAD_REQUEST).json({
+  //     error:
+  //       'Password must be at least 8 characters long and contain uppercase letters, lowercase letters, numbers and symbols'
+  //   })
+  // }
 
   // Vérification de la disponibilité de l'adresse email
   const userExists = await User.findOne({ email })
@@ -37,7 +37,8 @@ export const signUp = async (req, res) => {
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10) // Hachage du mot de passe utilisateur avec 10 rounds de salage
+    // Hachage du mot de passe utilisateur avec 10 rounds de salage
+    const hashedPassword = await bcrypt.hash(password, 10) 
     // Création d'une instance de User avec l'identifiant (email) et le mot de passe haché
     const user = new User({
       email: email,

@@ -1,11 +1,7 @@
-// import fs from 'fs'
-// import { promisify } from 'util'
 import httpStatus from 'http-status'
 import Book from '../models/book.js'
 import log from '../utils/logger.js'
 import { deleteImage } from '../utils/utils.js'
-
-// const deleteImage = promisify(fs.unlink) // Promessification de fs.unlink
 
 /////////// Renvoie un tableau de tous les livres /////////////////
 export const getBooks = async (req, res) => {

@@ -1,11 +1,7 @@
 import sharp from 'sharp'
-// import fs from 'fs'
-// import { promisify } from 'util'
 import httpStatus from 'http-status'
 import log from '../utils/logger.js'
 import { deleteImage } from '../utils/utils.js'
-
-// const deleteImage = promisify(fs.unlink)
 
 const imageOptimize = async (req, res, next) => {
   if (!req.file) {
