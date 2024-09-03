@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import httpStatus from 'http-status'
 import User from '../models/user.js'
 import log from '../utils/logger.js'
+import { isSafePassword } from '../utils/utils.js'
 
 //////////// Création d'un nouvel utilisateur ////////////////////////
 export const signUp = async (req, res) => {
@@ -16,6 +17,14 @@ export const signUp = async (req, res) => {
     return res
       .status(httpStatus.BAD_REQUEST)
       .json({ error: 'Email and password are required' })
+  }
+
+  if (!isSafePassword(password)) {
+    log.error('Unsafe password')
+    return res.status(httpStatus.BAD_REQUEST).json({
+      error:
+        'Password must be at least 8 characters long and contain uppercase letters, lowercase letters, numbers and symbols'
+    })
   }
 
   // Vérification de la disponibilité de l'adresse email

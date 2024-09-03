@@ -5,6 +5,14 @@ import log from './logger.js'
 // Promessification de fs.unlink
 export const deleteImage = promisify(fs.unlink)
 
+// Contôle de qualité du mot de passe
+export const isSafePassword = (password) => {
+  // Au moins 8 caractères, minuscules, majuscules, chiffres et symboles
+  const regex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/`~])[A-Za-z\d!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/`~]{8,}$/
+  return regex.test(password)
+}
+
 // Normalisation du port
 export const normalizePort = (val) => {
   const port = parseInt(val, 10) // Conversion de la valeur en entier
