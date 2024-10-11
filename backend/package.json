@@ -8,7 +8,8 @@
     "test": "\t",
     "pretty": "prettier --write .",
     "lint": "eslint .",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "start-prod": "node server.js"
   },
   "prettier": "prettier-config-standard",
   "repository": {
