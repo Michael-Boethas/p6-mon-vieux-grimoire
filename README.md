@@ -17,7 +17,7 @@
 
 <h2 style="color:   #b65b11  ; font-size:24px" id="features">Fonctionnalités</h2>
 <ul>
-    <li>Inscription et connexion avec authentification.</li>
+    <li>Inscription et connexion/déconnexion avec authentification, gestion de session avec token d'accès et token d'actualisation</li>
     <li>Opérations CRUD: Les utilisateurs peuvent créer, noter, mettre à jour et supprimer des livres.</li>
     <li>Notation des livres, la note moyenne est calculée automatiquement.</li>
     <li>Optimisation des images téléchargées.</li>
@@ -63,7 +63,8 @@ PORT=
 ALLOWED_ORIGIN_DOMAIN=
 ALLOWED_ORIGIN_PORT=
 MONGODB_CONNECTION_STRING=
-JWT_SECRET_KEY=
+ACCESS_JWT_SECRET_KEY=
+SESSION_JWT_SECRET_KEY=
 IMAGES_DIR=public/images
 
 </code></pre>
@@ -81,6 +82,7 @@ cd p6-mon-vieux-grimoire
     <li>Node.js: 20.16.0</li>
     <li>npm</li>
     <li>bcrypt: 5.1.1</li>
+    <li>cookie-parser: 1.4.7</li>
     <li>cors: 2.8.5</li>
     <li>dotenv: 16.4.5</li>
     <li>express: 4.19.2</li>
@@ -96,7 +98,7 @@ cd p6-mon-vieux-grimoire
 </ul>
 
 <pre><code>
-npm install bcrypt cors dotenv express express-rate-limit helmet http-status jsonwebtoken mongoose mongoose-unique-validator multer sharp winston
+npm install bcrypt cors dotenv express express-rate-limit helmet http-status jsonwebtoken cookie-parser mongoose mongoose-unique-validator multer sharp winston
 </code></pre>
 
 <p>Démarrez le serveur :</li>
@@ -114,6 +116,7 @@ npm start
 <ul>
     <li>Inscription : <code>POST /api/auth/signup</code></li>
     <li>Connexion : <code>POST /api/auth/login</code></li>
+    <li>Déconnexion : <code>POST /api/auth/logout</code></li>
 </ul>
 
 <h3 style="font-style:italic;" >Livres :</h3>

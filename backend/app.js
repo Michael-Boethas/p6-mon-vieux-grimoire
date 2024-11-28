@@ -1,4 +1,5 @@
 import express from 'express'
+import cookieParser from 'cookie-parser';
 import setRequestLimit from './middleware/setRequestLimit.js'
 import setHeaders from './middleware/setHeaders.js'
 import routes from './routes/routes.js'
@@ -9,6 +10,8 @@ const app = express()
 app.use(setRequestLimit) // Gestion du flux de requêtes entrantes
 
 app.use(express.json()) // Traitement des requêtes avec des données au format JSON
+
+app.use(cookieParser()); // Traitement des requêtes avec cookies
 
 app.use(express.static('public')) // Accès aux fichiers statiques (avant les restrictions des headers )
 
