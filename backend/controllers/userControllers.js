@@ -90,13 +90,13 @@ export const signIn = async (req, res) => {
     const accessToken = jwt.sign(
       { userId: user._id },
       process.env.ACCESS_JWT_SECRET_KEY,
-      { expiresIn: '2m' }
+      { expiresIn: '10m' }
     )
 
     // Token d'actualisation
     const refreshToken = jwt.sign(
       { userId: user._id },
-      process.env.SESSION_JWT_SECRET_KEY,
+      process.env.REFRESH_JWT_SECRET_KEY,
       { expiresIn: '24h' }
     )
 
@@ -123,94 +123,13 @@ export const signIn = async (req, res) => {
   }
 }
 
-
-
-/////////////// Actualisation du token d'accès et rotation du refresh token ///////////////
-export const refreshSession = async (req, res) => {
-  const token = req.cookies.refreshToken;
-
-  if (!token) {
-    log.error(new Error('Refresh token not found'))
-    return res
-      .status(httpStatus.BAD_REQUEST)
-      .json({ error: 'Refresh token required' });
-  }
-
-  log.info('Refreshing session ');
-
-  try {
-    // Vérification de l'intégrité du refresh token
-    const decodedToken = jwt.verify(token, process.env.SESSION_JWT_SECRET_KEY);
-    const user = await User.findById(decodedToken.userId);
-
-    if (!user) {
-      log.error(new Error('Invalid user for this refresh token'))
-      return res
-        .status(httpStatus.UNAUTHORIZED)
-        .json({ error: 'User not found' });
-    }
-
-    // Vérification de sa correspondance avec le token haché sur la base de donnée 
-    const tokenIsValid = await bcrypt.compare(token, user.refreshToken);
-
-    if (!tokenIsValid) {
-      log.error(new Error('Refresh token not matching hashed version on DB'))
-      return res
-        .status(httpStatus.UNAUTHORIZED)
-        .json({ error: 'Invalid refresh token' });
-    }
-
-    // Création du nouveau token d'accès
-    const newAccessToken = jwt.sign(
-      { userId: user._id },
-      process.env.ACCESS_JWT_SECRET_KEY,
-      { expiresIn: '2m' }
-    );
-
-    // Création du nouveau refresh token
-    const newRefreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.SESSION_JWT_SECRET_KEY,
-      { expiresIn: '24h' }
-    );
-
-    // Mise à jour du refresh token haché
-    user.refreshToken = await bcrypt.hash(newRefreshToken, 10)
-    await user.save()
-
-
-    // Envoi du nouveau refresh token
-    res.cookie('refreshToken', newRefreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 60 * 60 * 1000, // 24h
-      sameSite: 'Strict',
-    });
-
-
-    // Envoi du nouveau token d'accès
-    return res.status(httpStatus.OK).json({
-      token: newAccessToken,
-      userId: user._id
-    });
-  } catch (err) {
-    log.error(err);
-    return res
-      .status(httpStatus.UNAUTHORIZED)
-      .json({ error: 'Invalid or expired refresh token' });
-  }
-};
-
-
 /////////////// Déconnexion, révocation du token d'actualisation  /////////////////
 export const signOut = async (req, res) => {
-
   try {
     const { userId } = req.auth
-    const user = await User.findById(userId)
+    const user = await User.findOne({ _id: userId })
 
     log.info(`User signing out: ${user._id}`)
-
 
     // Suppression du refresh token sur la DB
     if (user) {
@@ -233,5 +152,103 @@ export const signOut = async (req, res) => {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({ error: 'Failed to logout' })
+  }
+}
+
+/////////////// Actualisation du token d'accès et rotation du refresh token ///////////////
+export const refreshSession = async (req, res) => {
+  const token = req.cookies.refreshToken
+
+  if (!token) {
+    log.error(new Error('Refresh token not found'))
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ error: 'Refresh token required' })
+  }
+
+  log.info('Refreshing session')
+
+  try {
+    // Vérification de l'intégrité du refresh token
+    const decodedToken = jwt.verify(token, process.env.REFRESH_JWT_SECRET_KEY)
+    const user = await User.findOne({ _id: decodedToken.userId })
+
+    if (!user) {
+      log.error(new Error('Invalid user for this refresh token'))
+      return res
+        .status(httpStatus.UNAUTHORIZED)
+        .json({ error: 'User not found' })
+    }
+
+    // Vérification de sa correspondance avec le token haché sur la base de donnée
+    const tokenIsValid = await bcrypt.compare(token, user.refreshToken)
+
+    if (!tokenIsValid) {
+      log.error(new Error('Refresh token not matching hashed version on DB'))
+      return res
+        .status(httpStatus.UNAUTHORIZED)
+        .json({ error: 'Invalid refresh token' })
+    }
+
+    // Création du nouveau token d'accès
+    const newAccessToken = jwt.sign(
+      { userId: user._id },
+      process.env.ACCESS_JWT_SECRET_KEY,
+      { expiresIn: '10m' }
+    )
+
+    // Création du nouveau refresh token
+    const newRefreshToken = jwt.sign(
+      { userId: user._id },
+      process.env.REFRESH_JWT_SECRET_KEY,
+      { expiresIn: '24h' }
+    )
+
+    // Mise à jour du refresh token haché
+    user.refreshToken = await bcrypt.hash(newRefreshToken, 10)
+    await user.save()
+
+    // Envoi du nouveau refresh token
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000, // 24h
+      sameSite: 'Strict'
+    })
+
+    // Envoi du nouveau token d'accès
+    return res.status(httpStatus.OK).json({
+      token: newAccessToken,
+      userId: user._id
+    })
+  } catch (err) {
+    log.error(err)
+    return res
+      .status(httpStatus.UNAUTHORIZED)
+      .json({ error: 'Invalid or expired refresh token' })
+  }
+}
+
+/////////////// Suppression des données utilisateur ///////////////
+export const deleteAccount = async (req, res) => {
+  try {
+    const { userId } = req.auth
+    await User.deleteOne({ _id: userId })
+
+    // Suppression du cookie
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict'
+    })
+
+    return res
+      .status(httpStatus.OK)
+      .json({ message: 'Deleted account successfully' })
+  } catch (err) {
+    log.error(err)
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({ error: 'Failed to delete account' })
   }
 }

@@ -64,7 +64,7 @@ ALLOWED_ORIGIN_DOMAIN=
 ALLOWED_ORIGIN_PORT=
 MONGODB_CONNECTION_STRING=
 ACCESS_JWT_SECRET_KEY=
-SESSION_JWT_SECRET_KEY=
+REFRESH_JWT_SECRET_KEY=
 IMAGES_DIR=public/images
 
 </code></pre>
@@ -116,7 +116,9 @@ npm start
 <ul>
     <li>Inscription : <code>POST /api/auth/signup</code></li>
     <li>Connexion : <code>POST /api/auth/login</code></li>
+    <li>Actualisation des tokens: <code>POST /api/auth/refresh-session</code></li>
     <li>Déconnexion : <code>POST /api/auth/logout</code></li>
+    <li>Désinscription : <code> DELETE /api/auth/delete-account</code><li>
 </ul>
 
 <h3 style="font-style:italic;" >Livres :</h3>
