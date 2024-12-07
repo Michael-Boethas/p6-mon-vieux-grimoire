@@ -7,6 +7,8 @@ import routes from './routes/routes.js'
 // Initialisation de l'application express
 const app = express()
 
+app.set('trust proxy', 1); // Autorisation à 1 proxy (nécéssaire pour le reverse proxy de certains services d'hébergement)
+
 app.use(setRequestLimit) // Gestion du flux de requêtes entrantes
 
 app.use(express.json()) // Traitement des requêtes avec des données au format JSON

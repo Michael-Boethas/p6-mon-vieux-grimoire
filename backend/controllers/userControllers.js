@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import httpStatus from 'http-status'
-import User from '../models/user.js'
+import User from '../models/User.js'
+import BlacklistedToken from '../models/BlacklistedToken.js'
 import log from '../utils/logger.js'
 // import { isSafePassword } from '../utils/utils.js'
 
@@ -52,6 +53,9 @@ export const signUp = async (req, res) => {
   }
 }
 
+
+
+
 /////////////// Vérification de l'utilisateur, envoi de l'id et du token  //////////////////
 export const signIn = async (req, res) => {
   const { email, password } = req.body
@@ -90,7 +94,7 @@ export const signIn = async (req, res) => {
     const accessToken = jwt.sign(
       { userId: user._id },
       process.env.ACCESS_JWT_SECRET_KEY,
-      { expiresIn: '10m' }
+      { expiresIn: '15min' }
     )
 
     // Token d'actualisation
@@ -123,10 +127,13 @@ export const signIn = async (req, res) => {
   }
 }
 
+
+
+
 /////////////// Déconnexion, révocation du token d'actualisation  /////////////////
 export const signOut = async (req, res) => {
   try {
-    const { userId } = req.auth
+    const userId = req.auth.userId
     const user = await User.findOne({ _id: userId })
 
     log.info(`User signing out: ${user._id}`)
@@ -143,6 +150,14 @@ export const signOut = async (req, res) => {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Strict'
     })
+
+    // Invalidation du token d'accès jusqu'à expiration
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.decode(token);  // extraction du payload sans vérification (déjà effectuée dans authenticate)
+  
+    const expiry = new Date(decodedToken.exp * 1000); 
+    await BlacklistedToken.create({ token, expiresAt: expiry });
+
 
     return res
       .status(httpStatus.OK)
@@ -194,7 +209,7 @@ export const refreshSession = async (req, res) => {
     const newAccessToken = jwt.sign(
       { userId: user._id },
       process.env.ACCESS_JWT_SECRET_KEY,
-      { expiresIn: '10m' }
+      { expiresIn: '15min' }
     )
 
     // Création du nouveau refresh token

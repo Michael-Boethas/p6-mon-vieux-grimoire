@@ -1,5 +1,5 @@
 import httpStatus from 'http-status'
-import Book from '../models/book.js'
+import Book from '../models/Book.js'
 import log from '../utils/logger.js'
 import { deleteImage } from '../utils/utils.js'
 

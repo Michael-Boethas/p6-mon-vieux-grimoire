@@ -17,7 +17,7 @@
 
 <h2 style="color:   #b65b11  ; font-size:24px" id="features">Fonctionnalités</h2>
 <ul>
-    <li>Inscription et connexion/déconnexion avec authentification, gestion de session avec token d'accès et token d'actualisation</li>
+    <li>Inscription et connexion/déconnexion avec authentification. Gestion de session avec token d'accès, token d'actualisation et blacklist</li>
     <li>Opérations CRUD: Les utilisateurs peuvent créer, noter, mettre à jour et supprimer des livres.</li>
     <li>Notation des livres, la note moyenne est calculée automatiquement.</li>
     <li>Optimisation des images téléchargées.</li>
@@ -41,8 +41,9 @@
 │   ├── setHeaders.js
 │   └── setRequestLimit.js
 ├── models/
-│   ├── book.js
-│   └── user.js
+│   ├── BlacklistedToken.js
+│   ├── Book.js
+│   └── User.js
 ├── public/
 │   └── images/
 ├── routes/
