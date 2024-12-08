@@ -1,5 +1,5 @@
 import httpStatus from 'http-status'
-import Book from '../models/book.js'
+import Book from '../models/Book.js'
 import log from '../utils/logger.js'
 import { deleteImage } from '../utils/utils.js'
 
@@ -24,7 +24,7 @@ export const getBookByID = async (req, res) => {
       .status(httpStatus.BAD_REQUEST)
       .json({ error: 'ID parameter missing or undefined' })
   }
-
+  
   try {
     const book = await Book.findOne({ _id: bookId }) // Récupère un Book par son _id MongoDB en le comparant au paramètre URL
     if (!book) {

@@ -3,7 +3,13 @@ import { API_ENDPOINTS } from '../config/endpoints.js'
 import authenticate from '../middleware/authenticate.js'
 import imageUpload from '../middleware/imageUpload.js'
 import imageOptimize from '../middleware/imageOptimize.js'
-import { signUp, signIn } from '../controllers/userControllers.js'
+import {
+  signUp,
+  signIn,
+  signOut,
+  refreshSession,
+  deleteAccount
+} from '../controllers/userControllers.js'
 import {
   getBooks,
   getBookByID,
@@ -19,6 +25,10 @@ const router = express.Router()
 //////////// User Routes ///////////////////////////////////
 router.post(API_ENDPOINTS.SIGN_UP, signUp)
 router.post(API_ENDPOINTS.SIGN_IN, signIn)
+router.post(API_ENDPOINTS.SIGN_OUT, authenticate, signOut)
+router.post(API_ENDPOINTS.REFRESH_SESSION, refreshSession)
+router.delete(API_ENDPOINTS.DELETE_ACCOUNT, authenticate, deleteAccount)
+
 
 //////////// Book Routes ///////////////////////////////////
 // (Par ordre de spécificité pour éviter les erreurs de routage)
