@@ -63,14 +63,28 @@ export const postBook = async (req, res) => {
     delete newBookData._id
     delete newBookData.userId
 
-    // Instantiation d'un nouveau livre
+    // Vérification de la validité du rating 
+    if (newBookData.rating < 0 || newBookData.rating > 5) {
+      log.error(new Error('User rating is out of range'))
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ error: 'Rating should be between 0 and 5' })
+    }
+
+    // Instanciation d'un nouveau livre
     const book = new Book({
-      ratings: [], // Initialisation d'un tableau vide (remplacé par le rating utilisateur si renseigné)
       ...newBookData, // Création des champs du modèle Book à partir des données extraites
       userId: req.auth.userId, // Ajout de l'identifiant utilisateur extrait du token
-      averageRating: 0, // Initialisation de la note moyenne à zéro
+      // Initialisation d'un tableau ratings
+      ratings: newBookData.rating 
+        ? [{ userId: req.auth.userId, grade: newBookData.rating }]
+        : [],
+      averageRating: newBookData.rating ? newBookData.rating : 0, // Initialisation de la note moyenne
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` // Ajout de l'URL de l'image sur le serveur
-    })
+    });
+
+
+
     // Enregistrement sur la base de donnée
     await book.save()
     return res
