@@ -10,7 +10,7 @@ export const getBooks = async (req, res) => {
     return res.status(httpStatus.OK).json(books)
   } catch (err) {
     log.error(err)
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err }) // Envoi de l'erreur au client
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to get books' }) // Envoi de l'erreur au client
   }
 }
 
@@ -22,19 +22,19 @@ export const getBookByID = async (req, res) => {
     log.error(new Error('ID parameter missing or undefined'))
     return res
       .status(httpStatus.BAD_REQUEST)
-      .json({ error: 'ID parameter missing or undefined' })
+      .json({ errorMessage: 'ID parameter missing or undefined' })
   }
   
   try {
     const book = await Book.findOne({ _id: bookId }) // Récupère un Book par son _id MongoDB en le comparant au paramètre URL
     if (!book) {
       log.error(new Error(`Book not found (${bookId})`))
-      return res.status(httpStatus.NOT_FOUND).json({ error: 'Book not found' })
+      return res.status(httpStatus.NOT_FOUND).json({ errorMessage: 'Book not found' })
     }
     return res.status(httpStatus.OK).json(book)
   } catch (err) {
-    log.error(new Error(`Error retrieving book (${bookId}):`))
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    log.error(err)
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to get a book' })
   }
 }
 
@@ -47,7 +47,7 @@ export const getTopRated = async (req, res) => {
     return res.status(httpStatus.OK).json(topRatedBooks)
   } catch (err) {
     log.error(err)
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to retrieve top rated books' })
   }
 }
 
@@ -63,14 +63,27 @@ export const postBook = async (req, res) => {
     delete newBookData._id
     delete newBookData.userId
 
-    // Instantiation d'un nouveau livre
+    // Vérification de la validité du rating 
+    if (newBookData.rating < 0 || newBookData.rating > 5) {
+      log.error(new Error('User rating is out of range'))
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ errorMessage: 'Rating should be between 0 and 5' })
+    }
+
+    // Instanciation d'un nouveau livre
     const book = new Book({
-      ratings: [], // Initialisation d'un tableau vide (remplacé par le rating utilisateur si renseigné)
       ...newBookData, // Création des champs du modèle Book à partir des données extraites
       userId: req.auth.userId, // Ajout de l'identifiant utilisateur extrait du token
-      averageRating: 0, // Initialisation de la note moyenne à zéro
+      // Initialisation d'un tableau ratings
+      ratings: newBookData.rating 
+        ? [{ userId: req.auth.userId, grade: newBookData.rating }]
+        : [],
+      averageRating: newBookData.rating ? newBookData.rating : 0, // Initialisation de la note moyenne
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` // Ajout de l'URL de l'image sur le serveur
-    })
+    });
+
+
     // Enregistrement sur la base de donnée
     await book.save()
     return res
@@ -84,7 +97,7 @@ export const postBook = async (req, res) => {
     } catch (err) {
       log.error(err)
     }
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to post book' })
   }
 }
 
@@ -96,7 +109,7 @@ export const updateBook = async (req, res) => {
     log.error(new Error('ID parameter missing or undefined'))
     return res
       .status(httpStatus.BAD_REQUEST)
-      .json({ error: 'ID parameter missing or undefined' })
+      .json({ errorMessage: 'ID parameter missing or undefined' })
   }
 
   try {
@@ -113,7 +126,7 @@ export const updateBook = async (req, res) => {
       log.error(new Error('Operation denied: user unauthorized'))
       return res
         .status(httpStatus.FORBIDDEN)
-        .json({ error: 'Operation denied: user unauthorized' })
+        .json({ errorMessage: 'Operation denied: user unauthorized' })
     }
 
     // Gestion des cas avec et sans modification de l'image
@@ -151,7 +164,7 @@ export const updateBook = async (req, res) => {
     } catch (err) {
       log.error(err)
     }
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to update book' })
   }
 }
 
@@ -162,7 +175,7 @@ export const deleteBook = async (req, res) => {
     log.error(new Error('ID parameter missing or undefined'))
     return res
       .status(httpStatus.BAD_REQUEST)
-      .json({ error: 'ID parameter missing or undefined' })
+      .json({ errorMessage: 'ID parameter missing or undefined' })
   }
 
   log.info(`Deleting book ${req.params.id}`)
@@ -178,7 +191,7 @@ export const deleteBook = async (req, res) => {
       log.error(new Error('Operation denied: user unauthorized'))
       return res
         .status(httpStatus.FORBIDDEN)
-        .json({ error: 'Operation denied' })
+        .json({ errorMessage: 'Operation denied' })
     }
 
     // Vérification de l'existence du fichier
@@ -186,7 +199,7 @@ export const deleteBook = async (req, res) => {
       log.error(new Error(`File not found at: ${filePath}`))
       return res
         .status(httpStatus.NOT_FOUND)
-        .json({ error: 'Image file not found' })
+        .json({ errorMessage: 'Image file not found' })
     }
 
     // Suppression préalable de l'image (avant d'effacer l'objet contenant imageUrl)
@@ -203,7 +216,7 @@ export const deleteBook = async (req, res) => {
       .json({ message: 'Book deleted successfully' })
   } catch (err) {
     log.error(err)
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to delete book'})
   }
 }
 
@@ -217,7 +230,7 @@ export const rateBook = async (req, res) => {
     log.error(new Error('ID parameter missing or undefined'))
     return res
       .status(httpStatus.BAD_REQUEST)
-      .json({ error: 'ID parameter missing or undefined' })
+      .json({ errorMessage: 'ID parameter missing or undefined' })
   }
 
   log.info(`Rating book: ${bookId}`)
@@ -227,7 +240,7 @@ export const rateBook = async (req, res) => {
     const book = await Book.findOne({ _id: bookId })
     if (!book) {
       log.error(new Error('Book not found'))
-      return res.status(httpStatus.NOT_FOUND).json({ error: 'Book not found' })
+      return res.status(httpStatus.NOT_FOUND).json({ errorMessage: 'Book not found' })
     }
 
     const newRating = req.body.rating
@@ -236,7 +249,7 @@ export const rateBook = async (req, res) => {
       log.error(new Error('User rating is out of range'))
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ error: 'Rating should be between 0 and 5' })
+        .json({ errorMessage: 'Rating should be between 0 and 5' })
     }
 
     // Prévention des doublons de ratings
@@ -247,7 +260,7 @@ export const rateBook = async (req, res) => {
       log.error(new Error('User rating already exists for this book'))
       return res
         .status(httpStatus.CONFLICT)
-        .json({ error: 'User already has rated this book' })
+        .json({ errorMessage: 'User already has rated this book' })
     } else {
       // Ajout de la note de l'utilisateur
       book.ratings.push({
@@ -271,6 +284,6 @@ export const rateBook = async (req, res) => {
     return res.status(httpStatus.CREATED).json({ book })
   } catch (err) {
     log.error(err)
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to rate book' })
   }
 }

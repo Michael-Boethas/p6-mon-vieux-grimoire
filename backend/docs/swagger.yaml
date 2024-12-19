@@ -1,0 +1,392 @@
+openapi: 3.0.1
+info:
+  title: Mon Vieux Grimoire API
+  description: API for managing the "Mon Vieux Grimoire" database.
+  version: 1.0.0
+servers:
+  - url: https://p6-mon-vieux-grimoire-m6zc.onrender.com
+    description: API Testing Server
+tags:
+  - name: Auth
+    description: Endpoints related to user authentication and session management.
+  - name: Books
+    description: Endpoints related to book management.
+
+paths:
+  /api/auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Sign up a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email of the user.
+                  example: local-part@domain.tld
+                password:
+                  type: string
+                  format: password
+                  description: The password for the user account.
+                  example: Pa$$$w0rd
+      responses:
+        '201':
+          description: User created successfully.
+        '400':
+          description: Invalid email or password.
+        '409':
+          description: Email already in use.
+        '500':
+          description: Unexpected error.
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The user's email.
+                  example: local-part@domain.tld
+                password:
+                  type: string
+                  format: password
+                  description: The user's password.
+                  example: Pa$$$w0rd
+      responses:
+        '200':
+          description: User logged in successfully.
+        '400':
+          description: Email or password missing.
+        '401':
+          description: Invalid login/password combination.
+        '500':
+          description: Unexpected error.
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Log out a user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User logged out successfully.
+        '401':
+          description: Unauthorized.
+        '500':
+          description: Unexpected error.
+
+  /api/auth/refresh-session:
+    post:
+      tags:
+        - Auth
+      summary: Refresh session (access token) with refresh token
+      responses:
+        '200':
+          description: New tokens issued.
+        '400':
+          description: Refresh token required.
+        '401':
+          description: Invalid or expired refresh token.
+        '500':
+          description: Unexpected error.
+
+  /api/auth/delete-account:
+    delete:
+      tags:
+        - Auth
+      summary: Delete the authenticated user's account
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Account deleted successfully.
+        '401':
+          description: Unauthorized.
+        '500':
+          description: Unexpected error.
+
+  /api/books:
+    get:
+      tags:
+        - Books
+      summary: Retrieve a list of all books
+      description: Fetches an array containing all books from the database.
+      responses:
+        '200':
+          description: A list of books retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        '500':
+          description: Internal server error.
+
+    post:
+      tags:
+        - Books
+      summary: Add a new book
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - book
+              properties:
+                book:
+                  type: string
+                  description: JSON string containing book details.
+                  example: |
+                    {
+                      "title": "War and Peace",
+                      "author": "Leo Tolstoy",
+                      "year": 1869,
+                      "genre": "Novel",
+                      "rating": 5
+                    }
+                file:
+                  type: string
+                  format: binary
+                  description: Cover image file for the book.
+      responses:
+        '201':
+          description: Book created successfully.
+        '400':
+          description: Invalid input.
+        '500':
+          description: Unexpected error.
+
+  /api/books/bestrating:
+    get:
+      tags:
+        - Books
+      summary: Get top-rated books
+      responses:
+        '200':
+          description: List of top-rated books.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        '500':
+          description: Unexpected error.
+
+  /api/books/{id}:
+    get:
+      tags:
+        - Books
+      summary: Get a book by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the book.
+      responses:
+        '200':
+          description: Book details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: ID parameter missing.
+        '404':
+          description: Book not found.
+        '500':
+          description: Unexpected error.
+
+    put:
+      tags:
+        - Books
+      summary: Update a book by its ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the book.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                book:
+                  type: string
+                  description: JSON string containing updated book details.
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Book updated successfully.
+        '400':
+          description: ID parameter missing.
+        '403':
+          description: Forbidden operation.
+        '500':
+          description: Unexpected error.
+
+    delete:
+      tags:
+        - Books
+      summary: Delete a book by its ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the book.
+      responses:
+        '200':
+          description: Book deleted successfully.
+        '403':
+          description: Unauthorized operation.
+        '404':
+          description: Image file not found.
+        '500':
+          description: Unexpected error.
+
+  /api/books/{id}/rating:
+    post:
+      tags:
+        - Books
+      summary: Add a rating to a book
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the book.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - grade
+              properties:
+                grade:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  description: Rating grade between 1 and 5.
+      responses:
+        '400':
+          description: ID parameter is missing or the rating out of range.
+        '404':
+          description: Book not found.
+        '409':
+          description: The user has already rated the book.
+        '500':
+          description: Unexpected error.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        refreshToken:
+          type: string
+
+    Book:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        imageUrl:
+          type: string
+        year:
+          type: integer
+        genre:
+          type: string
+        ratings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rating'
+        averageRating:
+          type: number
+
+    Rating:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        grade:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    BlacklistedToken:
+      type: object
+      properties:
+        _id:
+          type: string
+        token:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time

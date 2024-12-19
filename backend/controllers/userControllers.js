@@ -4,7 +4,7 @@ import httpStatus from 'http-status'
 import User from '../models/User.js'
 import BlacklistedToken from '../models/BlacklistedToken.js'
 import log from '../utils/logger.js'
-// import { isSafePassword } from '../utils/utils.js'
+import { isValidEmail, isSafePassword } from '../utils/utils.js'
 
 //////////// Création d'un nouvel utilisateur ////////////////////////
 export const signUp = async (req, res) => {
@@ -17,16 +17,23 @@ export const signUp = async (req, res) => {
     log.warn('Email or password missing')
     return res
       .status(httpStatus.BAD_REQUEST)
-      .json({ error: 'Email and password are required' })
+      .json({ errorMessage: 'Email and password are required' })
   }
 
-  // if (!isSafePassword(password)) {
-  //   log.error('Unsafe password, aborting')
-  //   return res.status(httpStatus.BAD_REQUEST).json({
-  //     error:
-  //       'Password must be at least 8 characters long and contain uppercase letters, lowercase letters, numbers and symbols'
-  //   })
-  // }
+  if (!isValidEmail(email)) {
+    log.error('Invalid email address, aborting')
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ errorMessage: 'Email must respect the "local-part@domain.TLD" format' })
+  }
+
+  if (!isSafePassword(password)) {
+    log.error('Unsafe password, aborting')
+    return res.status(httpStatus.BAD_REQUEST).json({
+      errorMessage:
+        'Password must be at least 8 characters long and contain uppercase letters, lowercase letters, numbers and symbols'
+    })
+  }
 
   // Vérification de la disponibilité de l'adresse email
   const userExists = await User.findOne({ email: email })
@@ -34,7 +41,7 @@ export const signUp = async (req, res) => {
     log.error(new Error('Email already registered'))
     return res
       .status(httpStatus.CONFLICT)
-      .json({ error: 'Email already in use' })
+      .json({ errorMessage: 'Email already in use' })
   }
 
   try {
@@ -49,12 +56,9 @@ export const signUp = async (req, res) => {
     return res.status(httpStatus.CREATED).json({ message: 'New user created' })
   } catch (err) {
     log.error(err)
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to sign up' })
   }
 }
-
-
-
 
 /////////////// Vérification de l'utilisateur, envoi de l'id et du token  //////////////////
 export const signIn = async (req, res) => {
@@ -64,7 +68,7 @@ export const signIn = async (req, res) => {
     log.warn('Email or password missing')
     return res
       .status(httpStatus.BAD_REQUEST)
-      .json({ error: 'Email and password are required' })
+      .json({ errorMessage: 'Email and password are required' })
   }
 
   try {
@@ -75,7 +79,7 @@ export const signIn = async (req, res) => {
       log.error(new Error('User not found in database'))
       return res
         .status(httpStatus.UNAUTHORIZED)
-        .json({ error: 'User does not exist' })
+        .json({ errorMessage: 'User does not exist' })
     }
 
     log.info(`User signing in: ${user._id}`)
@@ -87,7 +91,7 @@ export const signIn = async (req, res) => {
       log.error(new Error('Password not matching user ID'))
       return res
         .status(httpStatus.UNAUTHORIZED)
-        .json({ error: 'login/password combination incorrect' })
+        .json({ errorMessage: 'login/password combination incorrect' })
     }
 
     // Token d'accès
@@ -123,12 +127,9 @@ export const signIn = async (req, res) => {
     })
   } catch (err) {
     log.error(err)
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to log in' })
   }
 }
-
-
-
 
 /////////////// Déconnexion, révocation du token d'actualisation  /////////////////
 export const signOut = async (req, res) => {
@@ -152,12 +153,11 @@ export const signOut = async (req, res) => {
     })
 
     // Invalidation du token d'accès jusqu'à expiration
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.decode(token);  // extraction du payload sans vérification (déjà effectuée dans authenticate)
-  
-    const expiry = new Date(decodedToken.exp * 1000); 
-    await BlacklistedToken.create({ token, expiresAt: expiry });
+    const token = req.headers.authorization.split(' ')[1]
+    const decodedToken = jwt.decode(token) // extraction du payload sans vérification (déjà effectuée dans authenticate)
 
+    const expiry = new Date(decodedToken.exp * 1000)
+    await BlacklistedToken.create({ token, expiresAt: expiry })
 
     return res
       .status(httpStatus.OK)
@@ -166,7 +166,7 @@ export const signOut = async (req, res) => {
     log.error(err)
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ error: 'Failed to logout' })
+      .json({ errorMessage: 'Failed to log out' })
   }
 }
 
@@ -175,10 +175,10 @@ export const refreshSession = async (req, res) => {
   const token = req.cookies.refreshToken
 
   if (!token) {
-    log.error(new Error('Refresh token not found'))
+    log.error(new Error('Refresh token not provided'))
     return res
       .status(httpStatus.BAD_REQUEST)
-      .json({ error: 'Refresh token required' })
+      .json({ errorMessage: 'Refresh token required' })
   }
 
   log.info('Refreshing session')
@@ -192,7 +192,7 @@ export const refreshSession = async (req, res) => {
       log.error(new Error('Invalid user for this refresh token'))
       return res
         .status(httpStatus.UNAUTHORIZED)
-        .json({ error: 'User not found' })
+        .json({ errorMessage: 'User not found' })
     }
 
     // Vérification de sa correspondance avec le token haché sur la base de donnée
@@ -202,7 +202,7 @@ export const refreshSession = async (req, res) => {
       log.error(new Error('Refresh token not matching hashed version on DB'))
       return res
         .status(httpStatus.UNAUTHORIZED)
-        .json({ error: 'Invalid refresh token' })
+        .json({ errorMessage: 'Invalid refresh token' })
     }
 
     // Création du nouveau token d'accès
@@ -236,12 +236,15 @@ export const refreshSession = async (req, res) => {
       token: newAccessToken,
       userId: user._id
     })
-  } catch (err) {
-    log.error(err)
-    return res
-      .status(httpStatus.UNAUTHORIZED)
-      .json({ error: 'Invalid or expired refresh token' })
+} catch (err) {
+  log.error(err)
+  if (err instanceof jwt.JsonWebTokenError || err instanceof jwt.TokenExpiredError) {
+    // Problème de token
+    return res.status(httpStatus.UNAUTHORIZED).json({ errorMessage: 'Invalid or expired refresh token' })
   }
+  // Autre erreur 
+  return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to refresh session' })
+}
 }
 
 /////////////// Suppression des données utilisateur ///////////////
@@ -264,6 +267,6 @@ export const deleteAccount = async (req, res) => {
     log.error(err)
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ error: 'Failed to delete account' })
+      .json({ errorMessage: 'Failed to delete account' })
   }
 }

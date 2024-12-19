@@ -45,7 +45,7 @@ const imageUpload = (req, res, next) => {
   multerConfig(req, res, (err) => {
     if (err) {
       log.error(err)
-      return res.status(httpStatus.BAD_REQUEST).json({ err })
+      return res.status(httpStatus.BAD_REQUEST).json({ errorMessage: 'Failed to save image' })
     }
     next()
   })

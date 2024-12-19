@@ -10,7 +10,7 @@ const authenticate = async (req, res, next) => {
 
     if (!token) {
       log.error('Missing or invalid authorization header');
-      return res.status(httpStatus.UNAUTHORIZED).json({ error: 'Authorization token is required' });
+      return res.status(httpStatus.UNAUTHORIZED).json({ errorMessage: 'Authorization token is required' });
     }
 
     // Vérification des tokens révoqués 
@@ -18,7 +18,7 @@ const authenticate = async (req, res, next) => {
 
     if (blacklisted) {
       log.error('Token has been blacklisted');
-      return res.status(httpStatus.UNAUTHORIZED).json({ error: 'Invalid token' });
+      return res.status(httpStatus.UNAUTHORIZED).json({ errorMessage: 'Invalid token' });
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_JWT_SECRET_KEY) // Vérification de sa validité avec la clé
@@ -30,7 +30,7 @@ const authenticate = async (req, res, next) => {
     next()
   } catch (err) {
     log.error(err)
-    return res.status(httpStatus.UNAUTHORIZED).json({ err })
+    return res.status(httpStatus.UNAUTHORIZED).json({ errorMessage: 'Authentication failed' })
   }
 }
 
