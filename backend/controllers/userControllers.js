@@ -4,7 +4,7 @@ import httpStatus from 'http-status'
 import User from '../models/User.js'
 import BlacklistedToken from '../models/BlacklistedToken.js'
 import log from '../utils/logger.js'
-// import { isSafePassword } from '../utils/utils.js'
+import { isSafePassword, isValidEmail } from '../utils/utils.js'
 
 //////////// Création d'un nouvel utilisateur ////////////////////////
 export const signUp = async (req, res) => {
@@ -20,13 +20,20 @@ export const signUp = async (req, res) => {
       .json({ error: 'Email and password are required' })
   }
 
-  // if (!isSafePassword(password)) {
-  //   log.error('Unsafe password, aborting')
-  //   return res.status(httpStatus.BAD_REQUEST).json({
-  //     error:
-  //       'Password must be at least 8 characters long and contain uppercase letters, lowercase letters, numbers and symbols'
-  //   })
-  // }
+  if (!isValidEmail(email)) {
+    log.error('Invalid email address, aborting')
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ error: 'Email must respect the "local-part@domain.TLD" format' })
+  }
+
+  if (!isSafePassword(password)) {
+    log.error('Unsafe password, aborting')
+    return res.status(httpStatus.BAD_REQUEST).json({
+      error:
+        'Password must be at least 8 characters long and contain uppercase letters, lowercase letters, numbers and symbols'
+    })
+  }
 
   // Vérification de la disponibilité de l'adresse email
   const userExists = await User.findOne({ email: email })
@@ -52,9 +59,6 @@ export const signUp = async (req, res) => {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
   }
 }
-
-
-
 
 /////////////// Vérification de l'utilisateur, envoi de l'id et du token  //////////////////
 export const signIn = async (req, res) => {
@@ -127,9 +131,6 @@ export const signIn = async (req, res) => {
   }
 }
 
-
-
-
 /////////////// Déconnexion, révocation du token d'actualisation  /////////////////
 export const signOut = async (req, res) => {
   try {
@@ -152,12 +153,11 @@ export const signOut = async (req, res) => {
     })
 
     // Invalidation du token d'accès jusqu'à expiration
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.decode(token);  // extraction du payload sans vérification (déjà effectuée dans authenticate)
-  
-    const expiry = new Date(decodedToken.exp * 1000); 
-    await BlacklistedToken.create({ token, expiresAt: expiry });
+    const token = req.headers.authorization.split(' ')[1]
+    const decodedToken = jwt.decode(token) // extraction du payload sans vérification (déjà effectuée dans authenticate)
 
+    const expiry = new Date(decodedToken.exp * 1000)
+    await BlacklistedToken.create({ token, expiresAt: expiry })
 
     return res
       .status(httpStatus.OK)

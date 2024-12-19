@@ -9,16 +9,20 @@ const authenticate = async (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1] // Extraction du token depuis le header Authorization
 
     if (!token) {
-      log.error('Missing or invalid authorization header');
-      return res.status(httpStatus.UNAUTHORIZED).json({ error: 'Authorization token is required' });
+      log.error('Missing or invalid authorization header')
+      return res
+        .status(httpStatus.UNAUTHORIZED)
+        .json({ error: 'Authorization token is required' })
     }
 
-    // Vérification des tokens révoqués 
-    const blacklisted = await BlacklistedToken.findOne({ token });
+    // Vérification des tokens révoqués
+    const blacklisted = await BlacklistedToken.findOne({ token })
 
     if (blacklisted) {
-      log.error('Token has been blacklisted');
-      return res.status(httpStatus.UNAUTHORIZED).json({ error: 'Invalid token' });
+      log.error('Token has been blacklisted')
+      return res
+        .status(httpStatus.UNAUTHORIZED)
+        .json({ error: 'Invalid token' })
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_JWT_SECRET_KEY) // Vérification de sa validité avec la clé

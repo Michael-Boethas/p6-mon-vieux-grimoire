@@ -29,7 +29,6 @@ router.post(API_ENDPOINTS.SIGN_OUT, authenticate, signOut)
 router.post(API_ENDPOINTS.REFRESH_SESSION, refreshSession)
 router.delete(API_ENDPOINTS.DELETE_ACCOUNT, authenticate, deleteAccount)
 
-
 //////////// Book Routes ///////////////////////////////////
 // (Par ordre de spécificité pour éviter les erreurs de routage)
 router.get(API_ENDPOINTS.BOOKS, getBooks)

@@ -5,6 +5,13 @@ import log from './logger.js'
 // Promessification de fs.unlink
 export const deleteImage = promisify(fs.unlink)
 
+// Contrôle de validité de l'adresse email
+export const isValidEmail = (email) => {
+  // Format local-part@domain.TLD
+  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  return regex.test(email)
+}
+
 // Contôle de qualité du mot de passe
 export const isSafePassword = (password) => {
   // Au moins 8 caractères, minuscules, majuscules, chiffres et symboles
