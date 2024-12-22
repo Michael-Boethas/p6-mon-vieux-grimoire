@@ -77,7 +77,7 @@ export const postBook = async (req, res) => {
       userId: req.auth.userId, // Ajout de l'identifiant utilisateur extrait du token
       // Initialisation d'un tableau ratings
       ratings: newBookData.rating 
-        ? [{ userId: req.auth.userId, grade: newBookData.rating }]
+        ? [{ userId: req.auth.userId, userRating: newBookData.rating }]
         : [],
       averageRating: newBookData.rating ? newBookData.rating : 0, // Initialisation de la note moyenne
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` // Ajout de l'URL de l'image sur le serveur
@@ -265,7 +265,7 @@ export const rateBook = async (req, res) => {
       // Ajout de la note de l'utilisateur
       book.ratings.push({
         userId: req.auth.userId,
-        grade: newRating
+        userRating: newRating
       })
     }
 
@@ -273,7 +273,7 @@ export const rateBook = async (req, res) => {
     if (book.ratings.length > 0) {
       let sumRatings = 0
       book.ratings.forEach((rating) => {
-        sumRatings += rating.grade
+        sumRatings += rating.userRating
       })
       book.averageRating =
         Math.ceil((sumRatings / book.ratings.length) * 100) / 100

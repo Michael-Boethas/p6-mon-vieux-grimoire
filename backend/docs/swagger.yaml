@@ -160,6 +160,7 @@ paths:
               type: object
               required:
                 - book
+                - image
               properties:
                 book:
                   type: string
@@ -172,7 +173,7 @@ paths:
                       "genre": "Novel",
                       "rating": 5
                     }
-                file:
+                image:
                   type: string
                   format: binary
                   description: Cover image file for the book.
@@ -250,18 +251,31 @@ paths:
                 book:
                   type: string
                   description: JSON string containing updated book details.
-                file:
+                  example: |
+                    {
+                      "title": "The Great Gatsby",
+                      "author": "F. Scott Fitzgerald",
+                      "year": 1925,
+                      "genre": "Tragedy",
+                      "rating": 5
+                    }
+                image:
                   type: string
                   format: binary
+                  description: Cover image file for the book.
+              required:
+                - book
+                - image
       responses:
         '200':
           description: Book updated successfully.
         '400':
-          description: ID parameter missing.
+          description: ID parameter missing or invalid.
         '403':
           description: Forbidden operation.
         '500':
           description: Unexpected error.
+
 
     delete:
       tags:
@@ -307,13 +321,13 @@ paths:
             schema:
               type: object
               required:
-                - grade
+                - rating
               properties:
-                grade:
+                rating:
                   type: integer
                   minimum: 1
                   maximum: 5
-                  description: Rating grade between 1 and 5.
+                  description: Rating between 1 and 5.
       responses:
         '400':
           description: ID parameter is missing or the rating out of range.
@@ -375,7 +389,7 @@ components:
           type: string
         userId:
           type: string
-        grade:
+        userRating:
           type: integer
           minimum: 1
           maximum: 5

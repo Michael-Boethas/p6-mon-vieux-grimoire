@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const ratingSchema = new mongoose.Schema({
   userId: { type: String, required: true },
-  grade: { type: Number, required: true }
+  userRating: { type: Number, required: true }
 })
 
 const bookSchema = new mongoose.Schema(
