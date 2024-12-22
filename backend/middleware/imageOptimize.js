@@ -26,7 +26,7 @@ const imageOptimize = async (req, res, next) => {
     next()
   } catch (err) {
     log.error(err)
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err })
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ errorMessage: 'Failed to optimize image' })
   }
 }
 

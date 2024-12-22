@@ -29,27 +29,29 @@
 
 <pre><code>
 ├── app.js
-├── config/
+├── config
 │   └── endpoints.js
-├── controllers/
+├── controllers
 │   ├── bookControllers.js
 │   └── userControllers.js
-├── middleware/
+├── docs
+│   └── swagger.yaml
+├── middleware
 │   ├── authenticate.js
 │   ├── imageOptimize.js
 │   ├── imageUpload.js
 │   ├── setHeaders.js
 │   └── setRequestLimit.js
-├── models/
+├── models
 │   ├── BlacklistedToken.js
 │   ├── Book.js
 │   └── User.js
-├── public/
-│   └── images/
-├── routes/
+├── public
+│   └── images
+├── routes
 │   └── routes.js
 ├── server.js
-└── utils/
+└── utils
     ├── logger.js
     └── utils.js
 </code></pre>
@@ -95,11 +97,13 @@ cd p6-mon-vieux-grimoire
     <li>mongoose-unique-validator: 5.0.1</li>
     <li>multer: 1.4.5-lts.1</li>
     <li>sharp: 0.33.5</li>
+    <li>swagger-ui-express: 5.0.1</li>
     <li>winston: 3.14.2</li>
+    <li>yamljs: 0.3.0</li>
 </ul>
 
 <pre><code>
-npm install bcrypt cors dotenv express express-rate-limit helmet http-status jsonwebtoken cookie-parser mongoose mongoose-unique-validator multer sharp winston
+npm install bcrypt cookie-parser cors dotenv express express-rate-limit helmet http-status jsonwebtoken mongoose mongoose-unique-validator multer sharp swagger-ui-express winston yamljs
 </code></pre>
 
 <p>Démarrez le serveur :</li>
