@@ -4,7 +4,7 @@
 
 <h1 style="color:   #b65b11  ; font-size:24px">Site de référencement et de notation de livres</h1>
 
-<p>L'API backend de Mon Vieux Grimoire permet de gérer une collection de livres avec MongoDB. Les utilisateurs peuvent créer un compte, se connecter et effectuer des opérations CRUD sur les livres telles que l'ajout, la suppression et la modification des livres</p>
+<p>L'API backend de Mon Vieux Grimoire permet de gérer une collection de livres avec MongoDB. Les utilisateurs peuvent créer un compte, se connecter et effectuer des opérations CRUD sur les livres telles que l'ajout, la suppression et la modification des livres. (À noter que, conformément aux <a href="https://github.com/Michael-Boethas/p6-mon-vieux-grimoire/blob/main/Spécifications_techniques_API.pdf">spécifications techniques</a> du projet, un utilisateur ne peut noter un même livre qu'une seule fois et une note ne peut être modifiée)</p>
 
 <h2 style="color:   #b65b11  ; font-size:24px">Table des matières</h2>
 <ul>
