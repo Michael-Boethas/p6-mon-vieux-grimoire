@@ -1,33 +1,30 @@
-<div>
-    <img src="./Logo_README.png" alt="Logo Mon Vieux Grimoire" style="width: 100%; height: auto;">
-</div>
+![Logo Mon Vieux Grimoire](./Logo_README.png)
 
-<h1 style="color:   #b65b11  ; font-size:24px">Site de référencement et de notation de livres</h1>
+# Site de référencement et de notation de livres
 
-<p>L'API backend de Mon Vieux Grimoire permet de gérer une collection de livres avec MongoDB. Les utilisateurs peuvent créer un compte, se connecter et effectuer des opérations CRUD sur les livres telles que l'ajout, la suppression et la modification des livres. (À noter que, conformément aux <a href="https://github.com/Michael-Boethas/p6-mon-vieux-grimoire/blob/main/Spécifications_techniques_API.pdf">spécifications techniques</a> du projet, un utilisateur ne peut noter un même livre qu'une seule fois et une note ne peut être modifiée)</p>
+L'API backend de Mon Vieux Grimoire permet de gérer une collection de livres avec MongoDB. Les utilisateurs peuvent créer un compte, se connecter et effectuer des opérations CRUD sur les livres telles que l'ajout, la suppression et la modification des livres (À noter que, conformément aux [spécifications techniques](https://github.com/Michael-Boethas/p6-mon-vieux-grimoire/blob/main/Spécifications_techniques_API.pdf) du projet, un utilisateur ne peut noter un même livre qu'une seule fois et une note ne peut être modifiée).  
+Le frontend hébergé sur ce dépôt est fourni par [Openclassrooms](https://openclassrooms.com/fr/).
 
-<h2 style="color:   #b65b11  ; font-size:24px">Table des matières</h2>
-<ul>
-    <li><a href="#features">Fonctionnalités</a></li>
-    <li><a href="#installation">Installation</a></li>
-    <li><a href="#usage">Utilisation</a></li>
-    <li><a href="#api-endpoints">Endpoints de l'API</a></li>
-    <li><a href="#license">Licence</a></li>
-</ul>
+## Table des matières
 
-<h2 style="color:   #b65b11  ; font-size:24px" id="features">Fonctionnalités</h2>
-<ul>
-    <li>Inscription et connexion/déconnexion avec authentification. Gestion de session avec token d'accès, token d'actualisation et blacklist</li>
-    <li>Opérations CRUD: Les utilisateurs peuvent créer, noter, mettre à jour et supprimer des livres.</li>
-    <li>Notation des livres, la note moyenne est calculée automatiquement.</li>
-    <li>Optimisation des images téléchargées.</li>
-</ul>
+- [Fonctionnalités](#fonctionnalités)
+- [Installation](#installation)
+- [Utilisation](#utilisation)
+- [Endpoints de l'API](#endpoints-de-lapi)
+- [Licence](#licence)
 
-<h2 style="color:   #b65b11  ; font-size:24px" id="installation">Installation</h2>
+## Fonctionnalités
 
-<h3 style="font-style:italic;"  id="project-structure">Structure du projet :</h3>
+- Inscription et connexion/déconnexion avec authentification. Gestion de session avec token d'accès, token d'actualisation et blacklist.
+- Opérations CRUD : Les utilisateurs peuvent créer, noter, mettre à jour et supprimer des livres.
+- Notation des livres, la note moyenne est calculée automatiquement.
+- Optimisation des images téléchargées.
 
-<pre><code>
+## Installation
+
+### Structure du projet
+
+```plaintext
 ├── app.js
 ├── config
 │   └── endpoints.js
@@ -54,13 +51,13 @@
 └── utils
     ├── logger.js
     └── utils.js
-</code></pre>
+```
 
-<h3 style="font-style:italic;"  id="environment-variables">Variables d'environnement :</h3>
+### Variables d'environnement
 
-<p>Créez un fichier <code>.env</code> dans la racine du projet et ajoutez les variables d'environnement suivantes :</p>
+Créez un fichier `.env` dans la racine du projet et ajoutez les variables d'environnement suivantes :
 
-<pre><code>
+```plaintext
 NODE_ENV=production
 PORT=
 ALLOWED_ORIGIN_DOMAIN=
@@ -69,73 +66,77 @@ MONGODB_CONNECTION_STRING=
 ACCESS_JWT_SECRET_KEY=
 REFRESH_JWT_SECRET_KEY=
 IMAGES_DIR=public/images
+```
 
-</code></pre>
+### Clonez le dépôt
 
-<h3 style="font-style:italic;" >Clonez le dépôt :</h3>
-
-<pre><code>
+```bash
 git clone https://github.com/Michael-Boethas/p6-mon-vieux-grimoire.git
 cd p6-mon-vieux-grimoire
-</code></pre>
+```
 
-<h3 style="font-style:italic;" >Installation des dépendances :</h3>
+### Installation des dépendances
 
-<ul>
-    <li>Node.js: 20.16.0</li>
-    <li>npm</li>
-    <li>bcrypt: 5.1.1</li>
-    <li>cookie-parser: 1.4.7</li>
-    <li>cors: 2.8.5</li>
-    <li>dotenv: 16.4.5</li>
-    <li>express: 4.19.2</li>
-    <li>express-rate-limit: 7.4.0</li>
-    <li>helmet: 7.1.0</li>
-    <li>http-status: 1.7.4</li>
-    <li>jsonwebtoken: 9.0.2</li>
-    <li>mongoose: 8.5.2</li>
-    <li>mongoose-unique-validator: 5.0.1</li>
-    <li>multer: 1.4.5-lts.1</li>
-    <li>sharp: 0.33.5</li>
-    <li>swagger-ui-express: 5.0.1</li>
-    <li>winston: 3.14.2</li>
-    <li>yamljs: 0.3.0</li>
-</ul>
+#### Prérequis
 
-<pre><code>
+- Node.js: 20.16.0
+- npm
+
+#### Packages
+
+- `bcrypt: 5.1.1`
+- `cookie-parser: 1.4.7`
+- `cors: 2.8.5`
+- `dotenv: 16.4.5`
+- `express: 4.19.2`
+- `express-rate-limit: 7.4.0`
+- `helmet: 7.1.0`
+- `http-status: 1.7.4`
+- `jsonwebtoken: 9.0.2`
+- `mongoose: 8.5.2`
+- `mongoose-unique-validator: 5.0.1`
+- `multer: 1.4.5-lts.1`
+- `sharp: 0.33.5`
+- `swagger-ui-express: 5.0.1`
+- `winston: 3.14.2`
+- `yamljs: 0.3.0`
+
+#### Commande d'installation
+
+```bash
 npm install bcrypt cookie-parser cors dotenv express express-rate-limit helmet http-status jsonwebtoken mongoose mongoose-unique-validator multer sharp swagger-ui-express winston yamljs
-</code></pre>
+```
 
-<p>Démarrez le serveur :</li>
+### Démarrez le serveur
 
-<pre><code>
+```bash
 npm start
-</code></pre>
+```
 
-<h2  style="color:   #b65b11  ; font-size:24px" id="usage">Utilisation</h2>
-<p>Frontend, Postman ou cURL.</p>
+## Utilisation
 
-<h2  style="color:   #b65b11  ; font-size:24px" id="api-endpoints">Endpoints de l'API</h2>
+Frontend, Postman ou cURL.
 
-<h3 style="font-style:italic;" >Utilisateurs :</h3>
-<ul>
-    <li>Inscription : <code>POST /api/auth/signup</code></li>
-    <li>Connexion : <code>POST /api/auth/login</code></li>
-    <li>Actualisation des tokens: <code>POST /api/auth/refresh-session</code></li>
-    <li>Déconnexion : <code>POST /api/auth/logout</code></li>
-    <li>Désinscription : <code> DELETE /api/auth/delete-account</code><li>
-</ul>
+## Endpoints de l'API
 
-<h3 style="font-style:italic;" >Livres :</h3>
-<ul>
-    <li>Obtenir tous les livres : <code>GET /api/books</code></li>
-    <li>Obtenir un livre par ID : <code>GET /api/books/:id</code></li>
-    <li>Obtenir les livres les mieux notés : <code>GET /api/books/bestrating</code></li>
-    <li>Créer un nouveau livre : <code>POST /api/books</code></li>
-    <li>Mettre à jour un livre : <code>PUT /api/books/:id</code></li>
-    <li>Supprimer un livre : <code>DELETE /api/books/:id</code></li>
-    <li>Noter un livre : <code>POST /api/books/:id/rating</code></li>
-</ul>
+### Utilisateurs
 
-<h2 style="color:   #b65b11  ; font-size:24px" id="license">Licence</h2>
-<p>- Mon Vieux Grimoire ©</p>
+- **Inscription** : `POST /api/auth/signup`
+- **Connexion** : `POST /api/auth/login`
+- **Actualisation des tokens** : `POST /api/auth/refresh-session`
+- **Déconnexion** : `POST /api/auth/logout`
+- **Désinscription** : `DELETE /api/auth/delete-account`
+
+### Livres
+
+- **Obtenir tous les livres** : `GET /api/books`
+- **Obtenir un livre par ID** : `GET /api/books/:id`
+- **Obtenir les livres les mieux notés** : `GET /api/books/bestrating`
+- **Créer un nouveau livre** : `POST /api/books`
+- **Mettre à jour un livre** : `PUT /api/books/:id`
+- **Supprimer un livre** : `DELETE /api/books/:id`
+- **Noter un livre** : `POST /api/books/:id/rating`
+
+## Licence
+
+Mon Vieux Grimoire ©

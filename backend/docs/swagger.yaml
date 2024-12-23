@@ -1,8 +1,15 @@
 openapi: 3.0.1
 info:
   title: Mon Vieux Grimoire API
-  description: API for managing the "Mon Vieux Grimoire" database.
-  version: 1.0.0
+  description: |
+    API for managing the "Mon Vieux Grimoire" database.
+
+    A few things to keep in mind:
+      - The current version is deployed on Render.com's free tier. The server will "spin down" during periods of inactivity, leading to an initial delay when testing requests.  
+      - Image files are stored in ephemeral storage, which may result in image loss after a server restart or prolonged inactivity.
+      - In line with the project's specifications, each user can rate a book only once, and ratings cannot be modified.
+  version: 1.0.1
+
 servers:
   - url: https://p6-mon-vieux-grimoire-m6zc.onrender.com
     description: API Testing Server
@@ -213,7 +220,7 @@ paths:
           required: true
           schema:
             type: string
-          description: The unique identifier of the book.
+          description: ID of the book.
       responses:
         '200':
           description: Book details retrieved successfully.
@@ -240,7 +247,7 @@ paths:
           required: true
           schema:
             type: string
-          description: The unique identifier of the book.
+          description: ID of the book.
       requestBody:
         required: true
         content:
@@ -256,8 +263,7 @@ paths:
                       "title": "The Great Gatsby",
                       "author": "F. Scott Fitzgerald",
                       "year": 1925,
-                      "genre": "Tragedy",
-                      "rating": 5
+                      "genre": "Tragedy"
                     }
                 image:
                   type: string
@@ -289,7 +295,7 @@ paths:
           required: true
           schema:
             type: string
-          description: The unique identifier of the book.
+          description: ID of the book.
       responses:
         '200':
           description: Book deleted successfully.
@@ -313,7 +319,7 @@ paths:
           required: true
           schema:
             type: string
-          description: The unique identifier of the book.
+          description: ID of the book.
       requestBody:
         required: true
         content:
@@ -349,28 +355,43 @@ components:
     User:
       type: object
       properties:
-        _id:
-          type: string
         email:
           type: string
+          uniqueItems: true
         password:
           type: string
         refreshToken:
           type: string
+          description: "A token used to refresh the user's session."
+      required:
+        - email
+        - password
+
+    Rating:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: "Unique identifier of the user providing the rating."
+        userRating:
+          type: integer
+      required:
+        - userId
+        - userRating
 
     Book:
       type: object
       properties:
-        _id:
-          type: string
         userId:
           type: string
+          description: "Unique identifier of the user who added the book."
         title:
           type: string
         author:
           type: string
         imageUrl:
           type: string
+          description: "The URL of the book's cover image."
         year:
           type: integer
         genre:
@@ -378,29 +399,29 @@ components:
         ratings:
           type: array
           items:
-            $ref: '#/components/schemas/Rating'
+            $ref: "#/components/schemas/Rating"
+          description: "An array of user ratings for the book."
         averageRating:
           type: number
-
-    Rating:
-      type: object
-      properties:
-        _id:
-          type: string
-        userId:
-          type: string
-        userRating:
-          type: integer
-          minimum: 1
-          maximum: 5
+          description: "The average rating of the book."
+      required:
+        - userId
+        - title
+        - author
+        - imageUrl
+        - year
+        - genre
 
     BlacklistedToken:
       type: object
       properties:
-        _id:
-          type: string
         token:
           type: string
+          description: "Blacklisted token."
         expiresAt:
           type: string
           format: date-time
+          description: "Expiration date of the token."
+      required:
+        - token
+        - expiresAt
