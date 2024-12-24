@@ -5,10 +5,18 @@ info:
     API for managing the "Mon Vieux Grimoire" database.
 
     A few things to keep in mind:
-      - The current version is deployed on Render.com's free tier. The server will "spin down" during periods of inactivity, leading to an initial delay when testing requests.  
+      - The current version is deployed on Render.com's free tier. The server will "spin down" during periods of inactivity, leading to an initial delay when testing requests.
       - Image files are stored in ephemeral storage, which may result in image loss after a server restart or prolonged inactivity.
       - In line with the project's specifications, each user can rate a book only once, and ratings cannot be modified.
+
+
+
+
+    [![Postman Run Button](https://run.pstmn.io/button.svg)](https://www.postman.com/lunar-module-saganist-41308476/workspace/mishmesh-portfolio-public-workspace/collection/34648280-8eec5439-7315-4f98-8995-6b519400f935?action=share&creator=34648280&active-environment=34648280-c6c86a84-e43a-473b-b280-d03ac691547d)
+
+
   version: 1.0.1
+
 
 servers:
   - url: https://p6-mon-vieux-grimoire-m6zc.onrender.com
@@ -421,7 +429,7 @@ components:
         expiresAt:
           type: string
           format: date-time
-          description: "Expiration date of the token."
+          description: "Expiration date of the token (after which it will be purged from the blacklist)."
       required:
         - token
         - expiresAt
