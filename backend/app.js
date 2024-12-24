@@ -23,7 +23,7 @@ app.use(setHeaders) // Mise en place des headers
 
 
 // Mise en place de la documentation Swagger 
-const swaggerDoc = YAML.load('./docs/swagger.yaml'); 
+const swaggerDoc = YAML.load('./swagger.yaml'); 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.use(routes) // Mise en place des routes de l'API
