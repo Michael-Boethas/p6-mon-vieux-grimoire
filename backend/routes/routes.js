@@ -1,4 +1,6 @@
 import express from 'express'
+import swaggerUi from 'swagger-ui-express'
+import YAML from 'yamljs'
 import { API_ENDPOINTS } from '../config/endpoints.js'
 import authenticate from '../middleware/authenticate.js'
 import imageUpload from '../middleware/imageUpload.js'
@@ -21,6 +23,15 @@ import {
 } from '../controllers/bookControllers.js'
 
 const router = express.Router()
+
+// Endpoint pour réveiller le serveur si inactif 
+router.get(API_ENDPOINTS.WAKE_UP, (req, res) => {
+  res.status(200).send('API is up');
+});
+
+// Mise en place de la documentation Swagger 
+const swaggerDoc = YAML.load('./swagger.yaml'); 
+router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 //////////// User Routes ///////////////////////////////////
 router.post(API_ENDPOINTS.SIGN_UP, signUp)
