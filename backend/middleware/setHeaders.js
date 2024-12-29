@@ -6,7 +6,10 @@ import helmet from 'helmet'
 const corsOptions = {
   origin: [
     `http://${process.env.ALLOWED_ORIGIN_DOMAIN || 'localhost'}:${process.env.ALLOWED_ORIGIN_PORT || 3000}`,
-    'https://run.pstmn.io' // Autorisation pour le bouton "Run in Postman"
+    'https://run.pstmn.io', // Autorisation pour le bouton "Run in Postman"
+    'https://mishmesh-portfolio.vercel.app',
+    'https://mishmesh-portfolio.netlify.app',
+    'https://mishmesh-portfolio.onrender.com',
   ],  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Origin',
