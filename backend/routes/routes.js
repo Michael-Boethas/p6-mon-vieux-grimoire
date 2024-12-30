@@ -35,6 +35,8 @@ export const wakeUp = (req, res) => {
   }
 };
 
+router.get('/wake-up', wakeUp);
+
 // Mise en place de la documentation Swagger 
 const swaggerDoc = YAML.load('./swagger.yaml'); 
 router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
