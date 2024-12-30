@@ -60,8 +60,7 @@ Créez un fichier `.env` dans la racine du projet et ajoutez les variables d'env
 ```plaintext
 NODE_ENV=production
 PORT=
-ALLOWED_ORIGIN_DOMAIN=
-ALLOWED_ORIGIN_PORT=
+ALLOWED_ORIGINS=
 MONGODB_CONNECTION_STRING=
 ACCESS_JWT_SECRET_KEY=
 REFRESH_JWT_SECRET_KEY=
@@ -115,7 +114,7 @@ npm start
 
 ## Utilisation
 
-Frontend, Postman ou cURL.
+Frontend, SwaggerUI, Postman ou cURL.
 
 ## Endpoints de l'API
 

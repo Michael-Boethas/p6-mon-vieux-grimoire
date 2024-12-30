@@ -3,22 +3,19 @@ import helmet from 'helmet'
 
 // Headers cross-origin avec cors et sécurité générale avec helmet
 
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',');
+
 const corsOptions = {
-  origin: [
-    `http://${process.env.ALLOWED_ORIGIN_DOMAIN || 'localhost'}:${process.env.ALLOWED_ORIGIN_PORT || 3000}`,
-    'https://run.pstmn.io', // Autorisation pour le bouton "Run in Postman"
-    'https://mishmesh-portfolio.vercel.app',
-    'https://mishmesh-portfolio.netlify.app',
-    'https://mishmesh-portfolio.onrender.com',
-  ],  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Origin',
     'X-Requested-With',
     'Accept',
     'Content-Type',
-    'Authorization'
-  ]
-}
+    'Authorization',
+  ],
+};
 
 const helmetOptions = {
   contentSecurityPolicy: {
