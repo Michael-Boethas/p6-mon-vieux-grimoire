@@ -1,4 +1,5 @@
 import express from 'express'
+import httpStatus from 'http-status'
 import swaggerUi from 'swagger-ui-express'
 import YAML from 'yamljs'
 import { API_ENDPOINTS } from '../config/endpoints.js'
@@ -24,10 +25,17 @@ import {
 
 const router = express.Router()
 
-// Endpoint pour réveiller le serveur si inactif 
-router.get(API_ENDPOINTS.WAKE_UP, (req, res) => {
-  res.status(200).send('API is up');
-});
+// Route pour réveiller le serveur si inactif 
+export const wakeUp = (req, res) => {
+  try {
+    res.status(httpStatus.OK).send('API is up');
+  } catch (error) {
+    console.error('Error waking up the API:', error);
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Failed to wake up API');
+  }
+};
+
+router.get('/wake-up', wakeUp);
 
 // Mise en place de la documentation Swagger 
 const swaggerDoc = YAML.load('./swagger.yaml'); 
